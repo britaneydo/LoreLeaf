@@ -7,7 +7,7 @@ type TableProps = {
 
 
 
-export default function Tablelarge({ x, y }: TableProps) {
+export default function TableNarrow({ x, y }: TableProps) {
   return (
     <div
       className="absolute"
@@ -18,8 +18,8 @@ export default function Tablelarge({ x, y }: TableProps) {
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[96px] h-[96px] pixelated"
+        src="/assets/table_vertical.png"
+        className="w-[56px] h-[122px] pixelated"
         alt="table"
       />
     </div>

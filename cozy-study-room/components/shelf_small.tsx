@@ -14,13 +14,13 @@ export default function Tablelarge({ x, y }: TableProps) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.table,
+        zIndex: Z.shelf,
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[96px] h-[96px] pixelated"
-        alt="table"
+        src="/assets/shelf_small.png"
+        className="w-[40px] h-[70px] pixelated"
+        alt="shelf"
       />
     </div>
   );
