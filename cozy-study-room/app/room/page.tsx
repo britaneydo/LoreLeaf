@@ -1,3 +1,6 @@
+"use client";
+
+import { useRoomScale } from "../../hooks/useRoomScale";
 import Table from "../../components/table_large";
 import NarrowTableH from "../../components/table_horizontal";
 import NarrowTableV from "../../components/table_vertical";
@@ -42,6 +45,8 @@ const cols = Math.ceil(1400 / TILE_SIZE);
 const rows = Math.ceil(900 / TILE_SIZE);
 
 export default function Room() {
+  const scale = useRoomScale();
+
   return (
     <div className="w-full h-screen flex items-center justify-center bg-blue-100 overflow-hidden">
       <div
@@ -49,7 +54,7 @@ export default function Room() {
         style={{
           width: 1400,
           height: 900,
-          transform: "scale(0.8)",
+          transform: `scale(${scale})`,
           transformOrigin: "center",
         }}
       >
@@ -142,26 +147,26 @@ export default function Room() {
         <TopChair x={1260} y={340} />
 
         {/* SmallGreenLamp + glow — warm green-white pool of light */}
-        <Glow x={1225} y={210} size={140} color="rgba(180, 255, 160, 0.55)" opacity={.7} />
+        <Glow x={1225} y={210} size={140} color="rgba(180, 255, 160, 0.55)" opacity={0.5} />
         <SmallGreenLamp x={1205} y={185} />
 
-        <Glow x={1225} y={420} size={140} color="rgba(180, 255, 160, 0.55)" opacity={.7} />
+        <Glow x={1225} y={410} size={140} color="rgba(180, 255, 160, 0.55)" opacity={0.5} />
         <SmallGreenLamp x={1205} y={385} />
 
         {/* ── MID-LEFT vertical tables + sofas ── */}
-        <NarrowCarpetV x={70} y={550} />
-        <NarrowTableV  x={80} y={550} />
-        <SofaLeft      x={20} y={540} />
+        <NarrowCarpetV x={70} y={530} />
+        <NarrowTableV  x={80} y={530} />
+        <SofaLeft      x={20} y={520} />
 
-        <NarrowCarpetV x={70} y={400} />
-        <NarrowTableV  x={80} y={400} />
-        <SofaLeft      x={20} y={390} />
+        <NarrowCarpetV x={70} y={380} />
+        <NarrowTableV  x={80} y={380} />
+        <SofaLeft      x={20} y={370} />
 
         {/* TallRedLamp + glow — warm amber pool */}
-        <Glow x={45} y={500} size={160} color="rgba(255, 160, 60, 0.6)" opacity={1} />
-        <TallRedLamp x={25} y={460} />
+        <Glow x={45} y={480} size={160} color="rgba(255, 160, 60, 0.6)" opacity={0.5} />
+        <TallRedLamp x={25} y={440} />
 
-        <PurpleFlower x={25} y={360} />
+        <PurpleFlower x={25} y={340} />
 
         {/* ── BOTTOM RIGHT SOFA NOOK ── */}
         <Carpet     x={1150} y={700} />
@@ -177,11 +182,11 @@ export default function Room() {
         <Ladder     x={1320} y={565} />
 
         {/* TallRedLamp + glow — cosy nook warmth */}
-        <Glow x={1168} y={690} size={180} color="rgba(255, 150, 60, 0.55)" opacity={1} />
+        <Glow x={1168} y={690} size={180} color="rgba(255, 150, 60, 0.55)" opacity={0.5} />
         <TallRedLamp x={1150} y={650} />
 
         {/* TallRedLamp bottom-centre area */}
-        <Glow x={870} y={810} size={160} color="rgba(255, 150, 60, 0.55)" opacity={1} />
+        <Glow x={870} y={810} size={160} color="rgba(255, 150, 60, 0.55)" opacity={0.48} />
         <TallRedLamp x={850} y={775} />
 
         <Plant  x={1190} y={835} />
@@ -209,7 +214,7 @@ export default function Room() {
         <SingleYellow x={640} y={790} />
 
         {/* ── Extra plant mid-left ── */}
-        <Plant x={80} y={550} />
+        <Plant x={80} y={500} />
       </div>
     </div>
   );
