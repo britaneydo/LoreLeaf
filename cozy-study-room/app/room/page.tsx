@@ -149,19 +149,19 @@ export default function Room() {
         <SmallGreenLamp x={1205} y={385} />
 
         {/* ── MID-LEFT vertical tables + sofas ── */}
-        <NarrowCarpetV x={70} y={530} />
-        <NarrowTableV  x={80} y={530} />
-        <SofaLeft      x={20} y={520} />
+        <NarrowCarpetV x={70} y={550} />
+        <NarrowTableV  x={80} y={550} />
+        <SofaLeft      x={20} y={540} />
 
-        <NarrowCarpetV x={70} y={380} />
-        <NarrowTableV  x={80} y={380} />
-        <SofaLeft      x={20} y={370} />
+        <NarrowCarpetV x={70} y={400} />
+        <NarrowTableV  x={80} y={400} />
+        <SofaLeft      x={20} y={390} />
 
         {/* TallRedLamp + glow — warm amber pool */}
-        <Glow x={45} y={480} size={160} color="rgba(255, 160, 60, 0.6)" opacity={1} />
-        <TallRedLamp x={25} y={440} />
+        <Glow x={45} y={500} size={160} color="rgba(255, 160, 60, 0.6)" opacity={1} />
+        <TallRedLamp x={25} y={460} />
 
-        <PurpleFlower x={25} y={340} />
+        <PurpleFlower x={25} y={360} />
 
         {/* ── BOTTOM RIGHT SOFA NOOK ── */}
         <Carpet     x={1150} y={700} />
@@ -209,7 +209,7 @@ export default function Room() {
         <SingleYellow x={640} y={790} />
 
         {/* ── Extra plant mid-left ── */}
-        <Plant x={80} y={500} />
+        <Plant x={80} y={550} />
       </div>
     </div>
   );
