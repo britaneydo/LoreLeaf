@@ -8,8 +8,8 @@ type ChairProps = {
 export default function ChairLeft({ x, y }: ChairProps) {
   return (
     <img
-      src="/assets/chair_left.png"
-      className="absolute w-[36px] h-[62px] pixelated"
+      src="/assets/chair_top.png"
+      className="absolute w-[40px] h-[54px] pixelated"
       style={{
         left: x,
         top: y,

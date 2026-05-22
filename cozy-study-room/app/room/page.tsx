@@ -24,13 +24,17 @@ import TallRedLamp from "../../components/lamp_redL";
 import Plant2 from "../../components/plant2";
 import Plant3 from "../../components/plant3";
 import Tree from "../../components/tree";
-
-// Rendered sizes (2× natural px):
-//   shelf_large 186×102  shelf_medium 122×114  clock 44×118  ladder 64×102  plant 64×64
-//   carpet_large 184×190  carpet_narrow 124×56  carpet_narrow2 56×124
-//   table_large 120×122  table_horizontal 120×60  table_vertical 56×122  table_small 56×60
-//   sofa_top 124×62  sofa_left 50×128
-//   bookstack_1 62×42  bookstack_3 48×40
+import XLTableV from "../../components/table_XLV";
+import XLTableH from "../../components/table_XLH";
+import Globe from "../../components/globe";
+import SmallGreenLamp from "../../components/lamp_greenS";
+import OrangeFlower from "../../components/orangeflower";
+import PurpleFlower from "../../components/purpleflower";
+import TopChair from "../../components/chair_top";
+import BottomChair from "../../components/chair_bottom";
+import LeftChair from "../../components/chair_left";
+import RightChair from "../../components/chair_right";
+import Glow from "../../components/glow";
 
 const TILE_SIZE = 64;
 const WALL_TILE = { w: 32, h: 96 };
@@ -84,99 +88,128 @@ export default function Room() {
         })}
 
         {/* ── Sunlight shafts ── */}
-        <div className="absolute pointer-events-none animate-pulse" style={{ left: 270, top: 70, width: 220, height: 500, opacity: 0.7, background: "linear-gradient(to bottom, rgba(255,240,200,0.18), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(8px)", zIndex: 1 }} />
-        <div className="absolute pointer-events-none animate-pulse" style={{ left: 730, top: 70, width: 160, height: 420, opacity: 0.5, background: "linear-gradient(to bottom, rgba(255,240,200,0.15), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(8px)", zIndex: 1 }} />
+        <div className="absolute pointer-events-none animate-pulse" style={{ left: 270, top: 70, width: 220, height: 500, opacity: 0.7, background: "linear-gradient(to bottom, rgba(255,240,200,0.2), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
+        <div className="absolute pointer-events-none animate-pulse" style={{ left: 730, top: 70, width: 160, height: 420, opacity: 0.5, background: "linear-gradient(to bottom, rgba(255,240,200,0.18), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
 
         <h1 className="absolute top-2 left-2 z-10">Library</h1>
 
-        <Tree x={470}   y={50} />
+        <Tree x={470} y={50} />
 
-        {/* ── BACK WALL: LargeShelf LargeShelf [ladder] MedShelf [clock] MedShelf [ladder] LargeShelf LargeShelf ── */}
+        {/* ── BACK WALL ── */}
         <LargeShelf x={10}   y={20} />
         <LargeShelf x={198}  y={20} />
-        <Ladder     x={80}  y={25} />
+        <Ladder     x={80}   y={25} />
         <Clock      x={678}  y={15} />
-        <Ladder     x={1100}  y={25} />
+        <Ladder     x={1100} y={25} />
         <LargeShelf x={1016} y={20} />
         <LargeShelf x={1204} y={20} />
+        <Globe      x={960}  y={65} />
+        <SofaTop    x={820}  y={70} />
+        <SofaTop    x={450}  y={70} />
+        <NarrowCarpetH x={820} y={100} />
+        <NarrowCarpetH x={450} y={100} />
+        <SmallTable x={580}  y={75} />
+        <SmallTable x={760}  y={75} />
+        <BookStack2 x={592}  y={70} />
+        <BookStack3 x={765}  y={70} />
+        <OrangeFlower x={410} y={80} />
 
-        {/* ── CORNER PLANTS just below wall ── */}
+        {/* ── CORNER PLANTS ── */}
         <Plant x={0}    y={98} />
         <Plant x={1336} y={98} />
 
-        {/* ── TOP-LEFT reading nook: carpet 184×190, table 120×122 centred inside ── */}
-        <Carpet     x={30}   y={170} />
+        {/* ── TOP-LEFT reading nook ── */}
+        <Carpet     x={30}  y={170} />
         <Table      x={62}  y={204} />
         <BookStack1 x={80}  y={230} />
         <BookStack3 x={130} y={200} />
 
-        {/* ── TOP-RIGHT reading nook (mirror) ── */}
-        <Carpet     x={1190} y={170} />
-        <Table      x={1223} y={204} />
-        <BookStack3 x={1240} y={250} />
-        <BookStack1 x={1250} y={200} />
+        {/* ── TOP-RIGHT reading nook ── */}
+        <Carpet     x={300} y={170} />
+        <Table      x={332} y={204} />
+        <BookStack3 x={350} y={255} />
+        <BookStack1 x={370} y={210} />
 
-        {/* ── MID-RIGHT: mirror ── */}
-        <NarrowCarpetH x={1246} y={390} />
-        <NarrowTableH  x={1248} y={390} />
-        <BookStack3    x={1264} y={366} />
+        {/* ── EXTRA TABLES ── */}
+        <XLTableH x={1100} y={180} />
+        <XLTableH x={1100} y={380} />
 
-        {/* ── MID-LEFT: narrow vertical table further down the wall ── */}
-        <NarrowCarpetV x={70}  y={530} />
-        <NarrowTableV  x={80}  y={530} />
-        <SofaLeft   x={20} y={520} />
+        <TopChair x={1140} y={140} />
+        <TopChair x={1200} y={140} />
+        <TopChair x={1260} y={140} />
+        <TopChair x={1140} y={340} />
+        <TopChair x={1200} y={340} />
+        <TopChair x={1260} y={340} />
 
-        <NarrowCarpetV x={70}  y={380} />
-        <NarrowTableV  x={80}  y={380} />
-        <SofaLeft   x={20} y={370} />
+        {/* SmallGreenLamp + glow — warm green-white pool of light */}
+        <Glow x={1225} y={210} size={140} color="rgba(180, 255, 160, 0.55)" opacity={.7} />
+        <SmallGreenLamp x={1205} y={185} />
 
+        <Glow x={1225} y={420} size={140} color="rgba(180, 255, 160, 0.55)" opacity={.7} />
+        <SmallGreenLamp x={1205} y={385} />
+
+        {/* ── MID-LEFT vertical tables + sofas ── */}
+        <NarrowCarpetV x={70} y={530} />
+        <NarrowTableV  x={80} y={530} />
+        <SofaLeft      x={20} y={520} />
+
+        <NarrowCarpetV x={70} y={380} />
+        <NarrowTableV  x={80} y={380} />
+        <SofaLeft      x={20} y={370} />
+
+        {/* TallRedLamp + glow — warm amber pool */}
+        <Glow x={45} y={480} size={160} color="rgba(255, 160, 60, 0.6)" opacity={1} />
         <TallRedLamp x={25} y={440} />
 
+        <PurpleFlower x={25} y={340} />
 
         {/* ── BOTTOM RIGHT SOFA NOOK ── */}
         <Carpet     x={1150} y={700} />
         <SofaTop    x={1190} y={680} />
         <SofaLeft   x={1140} y={735} />
-        <SofaSmall   x={1250} y={855} />
+        <SofaSmall  x={1250} y={855} />
         <SmallTable x={1225} y={770} />
         <BookStack3 x={1230} y={760} />
-        <MedShelf x={1280} y={550} />
-        <MedShelf x={1150} y={550} />
-        <MedShelf x={1020} y={550} />
-        <MedShelf x={890} y={550} />
-        <Ladder x={1320} y={565} />
-        <TallRedLamp x={1150} y={650} />
-        <Plant x={1190}    y={835} />
-        <Plant3 x={835}    y={565} />
+        <MedShelf   x={1280} y={550} />
+        <MedShelf   x={1150} y={550} />
+        <MedShelf   x={1020} y={550} />
+        <MedShelf   x={890}  y={550} />
+        <Ladder     x={1320} y={565} />
 
+        {/* TallRedLamp + glow — cosy nook warmth */}
+        <Glow x={1168} y={690} size={180} color="rgba(255, 150, 60, 0.55)" opacity={1} />
+        <TallRedLamp x={1150} y={650} />
+
+        {/* TallRedLamp bottom-centre area */}
+        <Glow x={870} y={810} size={160} color="rgba(255, 150, 60, 0.55)" opacity={1} />
+        <TallRedLamp x={850} y={775} />
+
+        <Plant  x={1190} y={835} />
+        <Plant3 x={835}  y={565} />
 
         {/* ── BOTTOM-LEFT reading nook ── */}
-        <Carpet     x={30}   y={690} />
-        <Table      x={60}  y={724} />
-        <BookStack1 x={65}  y={725} />
-        <BookStack2 x={130} y={760} />
+        <Carpet     x={150} y={690} />
+        <Table      x={180} y={724} />
+        <BookStack1 x={185} y={725} />
+        <BookStack2 x={250} y={760} />
 
-
-        {/* ── sofa n table combo near reading nook ── */}
+        {/* ── Sofa + table combo ── */}
         <NarrowCarpetH x={900} y={810} />
         <NarrowTableH  x={902} y={800} />
         <BookStack1    x={940} y={798} />
-        <SofaBottom x={900} y={860} />
-        <SofaTop x={900} y={735} />
+        <SofaBottom    x={900} y={860} />
+        <SofaTop       x={900} y={735} />
 
-        <SingleRed  x={430} y={540} />
-        <SingleRed  x={430} y={640} />
-        <SingleRed  x={430} y={740} />
-        <SingleRed  x={430} y={840} />
+        {/* ── Single books as shelf-row dividers ── */}
+        <SingleRed    x={450} y={590} />
+        <SingleRed    x={450} y={690} />
+        <SingleRed    x={450} y={790} />
+        <SingleYellow x={640} y={590} />
+        <SingleYellow x={640} y={690} />
+        <SingleYellow x={640} y={790} />
 
-
-        <SingleYellow  x={620} y={540} />
-        <SingleYellow  x={620} y={640} />
-        <SingleYellow  x={620} y={740} />
-        <SingleYellow  x={620} y={840} />
-
-        {/* ── EXTRA PLANTS mid-sides for warmth ── */}
-        <Plant x={80}    y={500} />
+        {/* ── Extra plant mid-left ── */}
+        <Plant x={80} y={500} />
       </div>
     </div>
   );
