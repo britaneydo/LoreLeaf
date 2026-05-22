@@ -19,6 +19,9 @@ export default function TableLarge({ x, y }: Props) {
         src="/assets/table_large.png"
         className="w-[120px] h-[122px] pixelated"
         alt="large table"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

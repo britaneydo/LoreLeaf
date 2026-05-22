@@ -19,6 +19,9 @@ export default function SingleYellow({ x, y }: Props) {
         src="/assets/single_yellow.png"
         className="w-[108px] h-[106px] pixelated"
         alt="yellow book"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

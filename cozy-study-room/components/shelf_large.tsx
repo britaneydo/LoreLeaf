@@ -21,6 +21,9 @@ export default function ShelfLarge({ x, y }: TableProps) {
         src="/assets/shelf_large.png"
         className="w-[186px] h-[102px] pixelated"
         alt="shelf"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

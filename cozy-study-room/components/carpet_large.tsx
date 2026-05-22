@@ -19,6 +19,9 @@ export default function CarpetLarge({ x, y }: Props) {
         src="/assets/carpet_large.png"
         className="w-[184px] h-[190px] pixelated"
         alt="large carpet"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

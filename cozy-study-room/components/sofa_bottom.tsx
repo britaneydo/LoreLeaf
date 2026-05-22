@@ -19,6 +19,9 @@ export default function SofaTop({ x, y }: Props) {
         src="/assets/sofa_bottom.png"
         className="w-[124px] h-[52px] pixelated"
         alt="sofa"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

@@ -19,6 +19,9 @@ export default function CarpetNarrow({ x, y }: Props) {
         src="/assets/carpet_narrow.png"
         className="w-[124px] h-[56px] pixelated"
         alt="narrow carpet"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

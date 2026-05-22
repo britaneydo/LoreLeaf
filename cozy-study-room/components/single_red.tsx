@@ -19,6 +19,9 @@ export default function SingleRed({ x, y }: Props) {
         src="/assets/single_red.png"
         className="w-[108px] h-[100px] pixelated"
         alt="red book"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

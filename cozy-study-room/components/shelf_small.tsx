@@ -19,6 +19,9 @@ export default function ShelfSmall({ x, y }: Props) {
         src="/assets/shelf_small.png"
         className="w-[60px] h-[102px] pixelated"
         alt="small shelf"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

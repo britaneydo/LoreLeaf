@@ -19,6 +19,9 @@ export default function Ladder({ x, y }: Props) {
         src="/assets/lamp_redL.png"
         className="w-[40px] h-[84px] pixelated"
         alt="ladder"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

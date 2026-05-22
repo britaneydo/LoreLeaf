@@ -23,6 +23,7 @@ import SingleYellow from "../../components/single_yellow";
 import TallRedLamp from "../../components/lamp_redL";
 import Plant2 from "../../components/plant2";
 import Plant3 from "../../components/plant3";
+import Tree from "../../components/tree";
 
 // Rendered sizes (2× natural px):
 //   shelf_large 186×102  shelf_medium 122×114  clock 44×118  ladder 64×102  plant 64×64
@@ -88,6 +89,8 @@ export default function Room() {
 
         <h1 className="absolute top-2 left-2 z-10">Library</h1>
 
+        <Tree x={470}   y={50} />
+
         {/* ── BACK WALL: LargeShelf LargeShelf [ladder] MedShelf [clock] MedShelf [ladder] LargeShelf LargeShelf ── */}
         <LargeShelf x={10}   y={20} />
         <LargeShelf x={198}  y={20} />
@@ -108,15 +111,10 @@ export default function Room() {
         <BookStack3 x={130} y={200} />
 
         {/* ── TOP-RIGHT reading nook (mirror) ── */}
-        <Carpet     x={1216} y={170} />
-        <Table      x={1248} y={204} />
-        <BookStack3 x={1258} y={184} />
-        <BookStack1 x={1312} y={188} />
-
-        {/* ── MID-LEFT: narrow horizontal table below top-left nook ── */}
-        <NarrowCarpetH x={30}  y={390} />
-        <NarrowTableH  x={32}  y={390} />
-        <BookStack1    x={50}  y={366} />
+        <Carpet     x={1190} y={170} />
+        <Table      x={1223} y={204} />
+        <BookStack3 x={1240} y={250} />
+        <BookStack1 x={1250} y={200} />
 
         {/* ── MID-RIGHT: mirror ── */}
         <NarrowCarpetH x={1246} y={390} />
@@ -124,8 +122,15 @@ export default function Room() {
         <BookStack3    x={1264} y={366} />
 
         {/* ── MID-LEFT: narrow vertical table further down the wall ── */}
-        <NarrowCarpetV x={10}  y={520} />
-        <NarrowTableV  x={10}  y={520} />
+        <NarrowCarpetV x={70}  y={530} />
+        <NarrowTableV  x={80}  y={530} />
+        <SofaLeft   x={20} y={520} />
+
+        <NarrowCarpetV x={70}  y={380} />
+        <NarrowTableV  x={80}  y={380} />
+        <SofaLeft   x={20} y={370} />
+
+        <TallRedLamp x={25} y={440} />
 
 
         {/* ── BOTTOM RIGHT SOFA NOOK ── */}
@@ -146,10 +151,10 @@ export default function Room() {
 
 
         {/* ── BOTTOM-LEFT reading nook ── */}
-        <Carpet     x={0}   y={690} />
-        <Table      x={32}  y={724} />
-        <BookStack1 x={42}  y={720} />
-        <BookStack2 x={100} y={750} />
+        <Carpet     x={30}   y={690} />
+        <Table      x={60}  y={724} />
+        <BookStack1 x={65}  y={725} />
+        <BookStack2 x={130} y={760} />
 
 
         {/* ── sofa n table combo near reading nook ── */}
@@ -159,11 +164,19 @@ export default function Room() {
         <SofaBottom x={900} y={860} />
         <SofaTop x={900} y={735} />
 
-        <SingleRed  x={530} y={580} />
-        <SingleYellow  x={680} y={580} />
+        <SingleRed  x={430} y={540} />
+        <SingleRed  x={430} y={640} />
+        <SingleRed  x={430} y={740} />
+        <SingleRed  x={430} y={840} />
+
+
+        <SingleYellow  x={620} y={540} />
+        <SingleYellow  x={620} y={640} />
+        <SingleYellow  x={620} y={740} />
+        <SingleYellow  x={620} y={840} />
 
         {/* ── EXTRA PLANTS mid-sides for warmth ── */}
-        <Plant x={0}    y={500} />
+        <Plant x={80}    y={500} />
       </div>
     </div>
   );

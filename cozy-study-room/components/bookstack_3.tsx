@@ -19,6 +19,9 @@ export default function Bookstack3({ x, y }: Props) {
         src="/assets/bookstack_3.png"
         className="w-[48px] h-[40px] pixelated"
         alt="book stack"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

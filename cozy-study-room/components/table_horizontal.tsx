@@ -19,6 +19,9 @@ export default function TableHorizontal({ x, y }: Props) {
         src="/assets/table_horizontal.png"
         className="w-[120px] h-[60px] pixelated"
         alt="table"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

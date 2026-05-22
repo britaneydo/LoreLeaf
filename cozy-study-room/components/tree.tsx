@@ -1,17 +1,28 @@
 import { Z } from "@/lib/zIndex";
 
-export default function Tree() {
+type Props = {
+  x: number;
+  y: number;
+};
+
+export default function Tree({ x, y }: Props) {
   return (
-    <div className="absolute left-1/2 top-1/2 -translate-x-1/2">
+    <div
+      className="absolute"
+      style={{
+        left: x,
+        top: y,
+        zIndex: Z.plant,
+      }}
+    >
       <img
-        src="/assets/Blue-green_balls_tree3.png"
-        className="w-[50px] h-[50px] pixelated"
+        src="/assets/Luminous_tree1.png"
         alt="tree"
+        className="w-[500px] h-auto pixelated"
         style={{
-          zIndex: Z.tree,
+          imageRendering: "pixelated",
         }}
       />
     </div>
   );
 }
-

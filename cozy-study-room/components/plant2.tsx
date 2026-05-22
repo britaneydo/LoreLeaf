@@ -19,6 +19,9 @@ export default function Plant({ x, y }: Props) {
         src="/assets/plant2.png"
         className="w-[36px] h-[78px] pixelated"
         alt="plant"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

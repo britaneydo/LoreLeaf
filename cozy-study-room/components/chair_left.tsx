@@ -14,8 +14,10 @@ export default function ChairLeft({ x, y }: ChairProps) {
         left: x,
         top: y,
         zIndex: Z.chair,
+        imageRendering: "pixelated",
       }}
       alt="chair"
+      
     />
   );
 }

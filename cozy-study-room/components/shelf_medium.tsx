@@ -19,6 +19,9 @@ export default function ShelfMedium({ x, y }: Props) {
         src="/assets/shelf_medium.png"
         className="w-[122px] h-[114px] pixelated"
         alt="medium shelf"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

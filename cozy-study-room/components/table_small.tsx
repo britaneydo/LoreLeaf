@@ -19,6 +19,9 @@ export default function TableSmall({ x, y }: Props) {
         src="/assets/table_small.png"
         className="w-[56px] h-[60px] pixelated"
         alt="small table"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

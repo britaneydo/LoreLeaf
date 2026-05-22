@@ -19,6 +19,9 @@ export default function Clock({ x, y }: Props) {
         src="/assets/clock.png"
         className="w-[44px] h-[118px] pixelated"
         alt="grandfather clock"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );

@@ -19,6 +19,9 @@ export default function TableVertical({ x, y }: Props) {
         src="/assets/table_vertical.png"
         className="w-[56px] h-[122px] pixelated"
         alt="table"
+        style={{
+          imageRendering: "pixelated",
+        }}
       />
     </div>
   );
