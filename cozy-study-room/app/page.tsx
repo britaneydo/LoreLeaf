@@ -31,11 +31,39 @@ export default function Home() {
 }
 
 // calls postgreSQL func add_tree_points()
-async function add_tree_points() {
+async function add_tree_points1() {
   // Calls RPC func
-  const { data, error } = await supabase.rpc('add_tree_points', {
-    points_to_add: 1,
-  });
+  const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 1});
+
+  console.log("RPC Data:", data);
+  console.log("RPC Error:", error);
+
+  // log error
+  if (error) {
+    console.error("Error adding point: ", error);
+    // updates front-end
+    setMessage("Point could not be added.");
+
+    return;
+  }
+
+  // Updates the page directly from the returned SQL data.
+  if (data && data.length > 0) {
+    setPoints(data[0].new_total_points);
+    setStage(data[0].new_tree_stage);
+  }
+
+  // reloads tree data after successful update
+  await loadTree();
+
+  setMessage("Added +1 point !");
+  
+}
+
+// calls postgreSQL func add_tree_points()
+async function add_tree_points4() {
+  // Calls RPC func
+  const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 4});
 
   console.log("RPC Data:", data);
   console.log("RPC Error:", error);
@@ -81,10 +109,17 @@ async function add_tree_points() {
       <p>Tree Stage: {stage}</p>
 
       <button
-        onClick={add_tree_points}
+        onClick={add_tree_points1}
         className="rounded-lg bg-green-700 px-4 py-2 text-white"
       >
         Add +1 Tree Point
+      </button>
+
+      <button
+        onClick={add_tree_points4}
+        className="rounded-lg bg-green-700 px-4 py-2 text-white"
+      >
+        Add +4 Tree Point
       </button>
 
       <p>{message}</p>
