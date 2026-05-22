@@ -1,13 +1,11 @@
 import { Z } from "@/lib/zIndex";
 
-type TableProps = {
+type Props = {
   x: number;
   y: number;
 };
 
-
-
-export default function Tablelarge({ x, y }: TableProps) {
+export default function ShelfSmall({ x, y }: Props) {
   return (
     <div
       className="absolute"
@@ -19,8 +17,8 @@ export default function Tablelarge({ x, y }: TableProps) {
     >
       <img
         src="/assets/shelf_small.png"
-        className="w-[40px] h-[70px] pixelated"
-        alt="shelf"
+        className="w-[60px] h-[102px] pixelated"
+        alt="small shelf"
       />
     </div>
   );

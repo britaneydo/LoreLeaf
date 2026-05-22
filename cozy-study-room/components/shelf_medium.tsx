@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function ShelfMedium({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.table,
+        zIndex: Z.shelf,
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[120px] h-[122px] pixelated"
-        alt="large table"
+        src="/assets/shelf_medium.png"
+        className="w-[122px] h-[114px] pixelated"
+        alt="medium shelf"
       />
     </div>
   );

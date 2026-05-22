@@ -11,7 +11,7 @@ export default function Carpet({ x, y }: CarpetProps) {
   return (
     <img
       src="/assets/carpet_large.png"
-      className="absolute w-[128px] h-[128px] pixelated"
+      className="absolute w-[184px] h-[190px] pixelated"
       style={{
         left: x,
         top: y,

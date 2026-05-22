@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function CarpetNarrow2({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.table,
+        zIndex: Z.carpet,
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[120px] h-[122px] pixelated"
-        alt="large table"
+        src="/assets/carpet_narrow2.png"
+        className="w-[56px] h-[124px] pixelated"
+        alt="narrow carpet"
       />
     </div>
   );

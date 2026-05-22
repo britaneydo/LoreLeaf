@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function SofaLeft({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.table,
+        zIndex: Z.sofa,
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[120px] h-[122px] pixelated"
-        alt="large table"
+        src="/assets/sofa_left.png"
+        className="w-[50px] h-[128px] pixelated"
+        alt="sofa"
       />
     </div>
   );

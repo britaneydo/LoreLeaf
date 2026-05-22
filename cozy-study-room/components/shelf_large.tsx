@@ -7,7 +7,7 @@ type TableProps = {
 
 
 
-export default function Tablelarge({ x, y }: TableProps) {
+export default function ShelfLarge({ x, y }: TableProps) {
   return (
     <div
       className="absolute"
@@ -19,7 +19,7 @@ export default function Tablelarge({ x, y }: TableProps) {
     >
       <img
         src="/assets/shelf_large.png"
-        className="w-[150px] h-[90px] pixelated"
+        className="w-[186px] h-[102px] pixelated"
         alt="shelf"
       />
     </div>

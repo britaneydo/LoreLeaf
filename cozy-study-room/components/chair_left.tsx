@@ -5,7 +5,7 @@ type ChairProps = {
   y: number;
 };
 
-export default function Chair({ x, y }: ChairProps) {
+export default function ChairLeft({ x, y }: ChairProps) {
   return (
     <img
       src="/assets/chair.png"

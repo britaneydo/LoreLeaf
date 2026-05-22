@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function Ladder({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.table,
+        zIndex: Z.ladder,
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[120px] h-[122px] pixelated"
-        alt="large table"
+        src="/assets/ladder.png"
+        className="w-[64px] h-[102px] pixelated"
+        alt="ladder"
       />
     </div>
   );

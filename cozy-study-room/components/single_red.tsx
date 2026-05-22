@@ -5,7 +5,7 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function SingleRed({ x, y }: Props) {
   return (
     <div
       className="absolute"
@@ -16,9 +16,9 @@ export default function TableLarge({ x, y }: Props) {
       }}
     >
       <img
-        src="/assets/table_large.png"
-        className="w-[120px] h-[122px] pixelated"
-        alt="large table"
+        src="/assets/single_red.png"
+        className="w-[108px] h-[100px] pixelated"
+        alt="red book"
       />
     </div>
   );

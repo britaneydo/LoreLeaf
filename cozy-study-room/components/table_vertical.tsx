@@ -1,13 +1,11 @@
 import { Z } from "@/lib/zIndex";
 
-type TableProps = {
+type Props = {
   x: number;
   y: number;
 };
 
-
-
-export default function TableNarrow({ x, y }: TableProps) {
+export default function TableVertical({ x, y }: Props) {
   return (
     <div
       className="absolute"

@@ -8,4 +8,7 @@ export const Z = {
   ui: 10,
   shelf: 8,
   chair: 4,
+  sofa: 4,
+  plant: 9,
+  ladder: 9,
 } as const;
