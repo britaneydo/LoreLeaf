@@ -48,9 +48,9 @@ export default function Room() {
   const scale = useRoomScale();
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-blue-100 overflow-hidden">
+    <div className="fixed inset-0 flex items-center justify-center bg-stone-900 overflow-hidden">
       <div
-        className="relative bg-blue-200 border"
+        className="relative"
         style={{
           width: 1400,
           height: 900,
