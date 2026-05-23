@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function Plant({ x, y }: Props) {
+export default function Bookstack1({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.plant,
+        zIndex: Z.table,
       }}
     >
       <img
-        src="/assets/plant2.png"
-        className="w-[36px] h-[78px] pixelated"
-        alt="plant"
+        src="/assets/bookstack_6.png"
+        className="w-[32px] h-[60px] pixelated"
+        alt="book stack"
         style={{
           imageRendering: "pixelated",
         }}

@@ -5,7 +5,7 @@ type Props = {
   y: number;
 };
 
-export default function TableLarge({ x, y }: Props) {
+export default function Bookstack1({ x, y }: Props) {
   return (
     <div
       className="absolute"
@@ -16,9 +16,9 @@ export default function TableLarge({ x, y }: Props) {
       }}
     >
       <img
-        src="/assets/table_XLV.png"
-        className="w-[120px] h-[244px] pixelated"
-        alt="large table"
+        src="/assets/bookstack_4.png"
+        className="w-[60px] h-[40px] pixelated"
+        alt="book stack"
         style={{
           imageRendering: "pixelated",
         }}

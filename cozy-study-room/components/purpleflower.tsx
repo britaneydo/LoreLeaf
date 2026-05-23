@@ -12,7 +12,7 @@ export default function CarpetNarrow({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.carpet,
+        zIndex: Z.plant,
       }}
     >
       <img

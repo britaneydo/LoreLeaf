@@ -5,20 +5,20 @@ type Props = {
   y: number;
 };
 
-export default function CarpetNarrow({ x, y }: Props) {
+export default function Bookstack1({ x, y }: Props) {
   return (
     <div
       className="absolute"
       style={{
         left: x,
         top: y,
-        zIndex: Z.carpet,
+        zIndex: Z.table,
       }}
     >
       <img
-        src="/assets/carpet_narrow.png"
-        className="w-[50px] h-[64px] pixelated"
-        alt="narrow carpet"
+        src="/assets/bookstack_5.png"
+        className="w-[50px] h-[42px] pixelated"
+        alt="book stack"
         style={{
           imageRendering: "pixelated",
         }}
