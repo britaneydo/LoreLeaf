@@ -1,27 +1,29 @@
-"use client";
+"use client"; // pomodoroTimer
 
 import { useEffect, useRef, useState } from "react";
 
 
 type PomodoroTimerProps = {
     // function will run every time the user earns 1 tree point
-    onEarnpoint: () => Promise<void> | void;
+    onEarnpoint: (pointsToAdd: number) => Promise<void> | void;
 };
 
 // Minimum timer length 20min
-const MIN_MINUTES = 20;
+const MIN_MINUTES = 2;
 
 // Maximum timer length 180min
 const MAX_MINUTES = 180;
 
 // increment/decrement for timer (5min)
-const STEP_MINUTES = 5;
+const STEP_MINUTES = 1;
 
 // How many seconds are in one minute
 const SECONDS_PER_MINUTE = 60;
 
 // user earns 1 point every 20min
 const Point_Interval = 20 * SECONDS_PER_MINUTE;
+
+const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
 
 // main pomodoro timer component.
 export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
@@ -35,8 +37,11 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
     //
     const [pointsEarnedThisSession, setPointsEarnedThisSession] = useState(0);
 
-    // tracks # of completed focused seconds 
-    const rewardedSecondsRef = useRef(0); 
+    // tracks # of completed focused seconds (20min interval)
+    const rewardedNormalSecondsRef = useRef(0); 
+
+    // tracks how many 30min bonus rewards have been given
+    const rewardedBonusSecondsRef = useRef(0);
 
     // seconds into MM:SS format
     function formatTime(totalSeconds: number) {
@@ -99,7 +104,9 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
         setPointsEarnedThisSession(0);
 
         // resets rewwarded time tracker
-        rewardedSecondsRef.current = 0;
+        rewardedNormalSecondsRef.current = 0;
+
+        rewardedBonusSecondsRef.current = 0;
     }
 
     useEffect(() => {
@@ -135,19 +142,34 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
             const completedSeconds = totalSessionSeconds - secondsLeft;
 
             // check if user completed 20min interval
-            const shouldEarnPoint = completedSeconds >= rewardedSecondsRef.current + Point_Interval ; 
+            const shouldEarnNormalPoint = completedSeconds >= rewardedNormalSecondsRef.current + Point_Interval ; 
+
+            const shouldEarnBonusPoint = completedSeconds >= rewardedBonusSecondsRef.current + Bonus_Point_Interval ;
 
             // if user not reached 20min or did
-            if (!shouldEarnPoint) return;
+            if (shouldEarnNormalPoint) {
 
             // updates rewards track
-            rewardedSecondsRef.current += Point_Interval
+            rewardedNormalSecondsRef.current += Point_Interval
 
             // updates local point counter
             setPointsEarnedThisSession((previousPoints) => previousPoints + 1);
 
             // call parent function
-            onEarnpoint();
+            onEarnpoint(1);
+            }
+
+            if (shouldEarnBonusPoint) {
+
+            // updates rewards track
+            rewardedBonusSecondsRef.current += Bonus_Point_Interval
+
+            // updates local point counter
+            setPointsEarnedThisSession((previousPoints) => previousPoints + 4);
+
+            // call parent function
+            onEarnpoint(4);
+            }
 
         }, [secondsLeft, selectedMinutes, onEarnpoint]);
 

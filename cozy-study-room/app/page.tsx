@@ -33,9 +33,9 @@ export default function Home() {
 }
 
 // calls postgreSQL func add_tree_points()
-async function add_tree_point() {
+async function add_tree_point(pointsToAdd: number) {
   // Calls RPC func
-  const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 1});
+  const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: pointsToAdd});
 
   console.log("RPC Data:", data);
   console.log("RPC Error:", error);
@@ -55,10 +55,8 @@ async function add_tree_point() {
     setStage(data[0].new_tree_stage);
   }
 
-  // reloads tree data after successful update
-  await loadTree();
 
-  setMessage("Added +1 point !");
+  setMessage(`Added +${pointsToAdd} point(s)!`);
   
 }
 
@@ -90,7 +88,7 @@ async function add4_tree_points() {
   // reloads tree data after successful update
   await loadTree();
 
-  setMessage("Added +1 point !");
+  setMessage("Added +4 point !");
   
 }
 /*
@@ -121,13 +119,6 @@ async function add4_tree_points() {
       <p>Tree Stage: {stage}</p>
       {/*PomodoroTimer component */}
       <PomodoroTimer onEarnpoint={add_tree_point} />
-
-      <button
-        onClick={add_tree_point}
-        className="rounded-lg bg-green-700 px-4 py-2 text-white"
-      >
-        Add +1 Tree Point
-      </button>
 
       <button
         onClick={add4_tree_points}
