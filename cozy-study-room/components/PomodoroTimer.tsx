@@ -9,13 +9,13 @@ type PomodoroTimerProps = {
 };
 
 // Minimum timer length 20min
-const MIN_MINUTES = 2;
+const MIN_MINUTES = 20;
 
 // Maximum timer length 180min
 const MAX_MINUTES = 180;
 
 // increment/decrement for timer (5min)
-const STEP_MINUTES = 1;
+const STEP_MINUTES = 5;
 
 // How many seconds are in one minute
 const SECONDS_PER_MINUTE = 60;
