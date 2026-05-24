@@ -1,6 +1,5 @@
 "use client";
 
-import { Jersey_20 } from "next/font/google";
 import { useEffect, useRef, useState } from "react";
 
 
@@ -12,10 +11,10 @@ type PomodoroTimerProps = {
 // Minimum timer length 20min
 const MIN_MINUTES = 20;
 
-// Maximum timer length 3hrs
+// Maximum timer length 180min
 const MAX_MINUTES = 180;
 
-// increment/decrement for timer
+// increment/decrement for timer (5min)
 const STEP_MINUTES = 5;
 
 // How many seconds are in one minute
@@ -25,7 +24,7 @@ const SECONDS_PER_MINUTE = 60;
 const Point_Interval = 20 * SECONDS_PER_MINUTE;
 
 // main pomodoro timer component.
-export default function PomodoroTimer({onEarnpoint}; PomodoroTimerProps) {
+export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
     // stores selected time
     const [selectedMinutes, setSelectedMinutes ] = useState(MIN_MINUTES);
@@ -33,8 +32,13 @@ export default function PomodoroTimer({onEarnpoint}; PomodoroTimerProps) {
     const [secondsLeft, setSecondsLeft] = useState(MIN_MINUTES * SECONDS_PER_MINUTE);
     // tracks if timer is running but default state of pomodoro timer (off)
     const [isRunning, setIsRunning] = useState(false);
-    const rewardedSecondsRef = useRef(0);
+    //
+    const [pointsEarnedThisSession, setPointsEarnedThisSession] = useState(0);
 
+    // tracks # of completed focused seconds 
+    const rewardedSecondsRef = useRef(0); 
+
+    // seconds into MM:SS format
     function formatTime(totalSeconds: number) {
         // gets full amount of minutes left (rounded down with math.floor)
         const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
@@ -47,33 +51,34 @@ export default function PomodoroTimer({onEarnpoint}; PomodoroTimerProps) {
         const paddedSeconds = String(seconds).padStart(2, "0")
 
         // returns time in MM:SS format
-        return '${paddedMinutes}:${paddedSeconds}';
+        return `${paddedMinutes}:${paddedSeconds}`;
+    }
+
+    // updates the selected sesh length and resets the countdown to match
+    function updateSelectedMinutes(newMinutes: number) {
+        const clampedMinutes = Math.min(Math.max(newMinutes, MIN_MINUTES), MAX_MINUTES);
+
+        // updates user's slected timer length
+        setSelectedMinutes(clampedMinutes);
+
+        // Should only update the countdown if the timer is not running.
+        if (!isRunning){setSecondsLeft(clampedMinutes * SECONDS_PER_MINUTE)}
     }
 
     function increaseTimer(){
         // prevent changing time while timer is running
-        if(isRunning) return;
+        if(isRunning) {return;}
 
-        // calcualtes new selcted time without passing the max
-        const newMinutes = Math.min(selectedMinutes + STEP_MINUTES, MAX_MINUTES);
-
-        // updates selected minutes
-        setSelectedMinutes(selectedMinutes);
-        // updates seconds left to match the new selected time
-        setSecondsLeft(newMinutes * SECONDS_PER_MINUTE);
+        // Adds 5min 
+        updateSelectedMinutes(selectedMinutes + STEP_MINUTES);
     }
 
     function decreaseTimer(){
         // prevent changing time while timer is running
-        if(isRunning) return;
-
-        // calcualtes new selcted time without going below the min
-        const newMinutes = Math.min(selectedMinutes - STEP_MINUTES, MIN_MINUTES);
-
-        // updates selected minutes
-        setSelectedMinutes(selectedMinutes);
-        // updates seconds left to match the new selected time
-        setSecondsLeft(newMinutes * SECONDS_PER_MINUTE);
+        if(isRunning) {return;}
+        
+        // subtracts 5 minutes
+        updateSelectedMinutes(selectedMinutes - STEP_MINUTES);
     }
 
     // starts timer
@@ -96,8 +101,121 @@ export default function PomodoroTimer({onEarnpoint}; PomodoroTimerProps) {
         // resets rewwarded time tracker
         rewardedSecondsRef.current = 0;
     }
-}
 
+    useEffect(() => {
+        // if timer is not runnnig, do nothing
+        if (!isRunning) return; 
+
+        // create an interval that runs every second
+        const intervalId = setInterval(async () => {
+
+            // updates seconds left safely using the previous value
+            setSecondsLeft((previousSeconds) => {
+
+                // stops timer if reaches 0
+                if (previousSeconds <= 1){ 
+                    setIsRunning(false);
+
+                    return 0; // returns 0 so timer doesn't go negative
+                }
+
+                // Subtracts 1 second.
+                return previousSeconds -1;
+            });
+        },1000);
+            // cleans up interval when timer stops
+            return () => clearInterval(intervalId)
+        });
+
+        useEffect(() => {
+            // calculates total session seconds
+            const totalSessionSeconds = selectedMinutes * SECONDS_PER_MINUTE;
+
+            // calculate how many seconds have been completed
+            const completedSeconds = totalSessionSeconds - secondsLeft;
+
+            // check if user completed 20min interval
+            const shouldEarnPoint = completedSeconds >= rewardedSecondsRef.current + Point_Interval ; 
+
+            // if user not reached 20min or did
+            if (!shouldEarnPoint) return;
+
+            // updates rewards track
+            rewardedSecondsRef.current += Point_Interval
+
+            // updates local point counter
+            setPointsEarnedThisSession((previousPoints) => previousPoints + 1);
+
+            // call parent function
+            onEarnpoint();
+
+        }, [secondsLeft, selectedMinutes, onEarnpoint]);
+
+ return (
+    <section className="flex flex-col items-center gap-4 rounded-xl bg-neutral-800 p-6 text-white">
+      {/* Timer title */}
+      <h2 className="text-2xl font-bold">Focus Timer</h2>
+
+      {/* Main countdown display */}
+      <p className="text-5xl font-bold">{formatTime(secondsLeft)}</p>
+
+      {/* Shows selected session length */}
+      <p className="text-sm text-neutral-300">
+        Session Length: {selectedMinutes} minutes
+      </p>
+
+      {/* Shows points earned during this timer session */}
+      <p className="text-sm text-green-300">
+        Points Earned This Session: {pointsEarnedThisSession}
+      </p>
+
+      {/* Time adjustment buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={decreaseTimer}
+          disabled={isRunning}
+          className="rounded-lg bg-neutral-700 px-4 py-2 disabled:opacity-40"
+        >
+          -5 min
+        </button>
+
+        <button
+          onClick={increaseTimer}
+          disabled={isRunning}
+          className="rounded-lg bg-neutral-700 px-4 py-2 disabled:opacity-40"
+        >
+          +5 min
+        </button>
+      </div>
+
+      {/* Timer control buttons */}
+      <div className="flex gap-2">
+        <button
+          onClick={startTimer}
+          disabled={isRunning}
+          className="rounded-lg bg-green-700 px-4 py-2 disabled:opacity-40"
+        >
+          Start
+        </button>
+
+        <button
+          onClick={stopTimer}
+          disabled={!isRunning}
+          className="rounded-lg bg-yellow-700 px-4 py-2 disabled:opacity-40"
+        >
+          Stop
+        </button>
+
+        <button
+          onClick={resetTimer}
+          className="rounded-lg bg-red-700 px-4 py-2"
+        >
+          Reset
+        </button>
+      </div>
+    </section>
+  );
+}
 
 
 

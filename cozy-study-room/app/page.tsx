@@ -3,6 +3,9 @@
 import { useEffect, useState} from "react";
 import { supabase } from "@/lib/supabaseClient"
 
+// Imports the Pomodoro timer component.
+import PomodoroTimer from "@/components/PomodoroTimer";
+
 // loads current tree data from supabase and reads tree_progression table
 export default function Home() {
   const [points, setPoints] = useState(0);
@@ -16,7 +19,6 @@ export default function Home() {
       .eq("id", 1)  // req tree row where id = 1
       .single(); // one row is expected
   
-
   // log error
   if (error) {
     console.error("Error loading tree: ", error);
@@ -31,7 +33,7 @@ export default function Home() {
 }
 
 // calls postgreSQL func add_tree_points()
-async function add_tree_points1() {
+async function add_tree_point() {
   // Calls RPC func
   const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 1});
 
@@ -61,7 +63,9 @@ async function add_tree_points1() {
 }
 
 // calls postgreSQL func add_tree_points()
-async function add_tree_points4() {
+// Temporary testing function.
+// Adds 4 points to the shared tree.
+async function add4_tree_points() {
   // Calls RPC func
   const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 4});
 
@@ -89,6 +93,7 @@ async function add_tree_points4() {
   setMessage("Added +1 point !");
   
 }
+/*
   // runs once the page loads and the [] meanas that it only runs on first render
   useEffect(() => {
   // Creates an async function inside useEffect to avoid unnecessary renders
@@ -100,6 +105,13 @@ async function add_tree_points4() {
   // Runs the async function.
   fetchTreeOnLoad();
 }, []);
+*/
+  // runs once the page loads and the [] meanas that it only runs on first render
+  // Creates an async function inside useEffect to avoid unnecessary renders
+  // Calls our Supabase loading function.
+  // Runs the async function.
+  useEffect(() => {async function fetchTreeOnLoad() {await loadTree();}  fetchTreeOnLoad(); }, []);
+
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center gap-4">
@@ -107,16 +119,18 @@ async function add_tree_points4() {
 
       <p>Tree Points: {points}</p>
       <p>Tree Stage: {stage}</p>
+      {/*PomodoroTimer component */}
+      <PomodoroTimer onEarnpoint={add_tree_point} />
 
       <button
-        onClick={add_tree_points1}
+        onClick={add_tree_point}
         className="rounded-lg bg-green-700 px-4 py-2 text-white"
       >
         Add +1 Tree Point
       </button>
 
       <button
-        onClick={add_tree_points4}
+        onClick={add4_tree_points}
         className="rounded-lg bg-green-700 px-4 py-2 text-white"
       >
         Add +4 Tree Point
