@@ -12,7 +12,7 @@ export default function Tree({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.plant,
+        zIndex: Z.tree,
       }}
     >
       <img

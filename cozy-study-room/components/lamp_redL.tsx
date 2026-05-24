@@ -12,7 +12,7 @@ export default function Ladder({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.ladder,
+        zIndex: 6,
       }}
     >
       <img

@@ -12,7 +12,7 @@ export default function Plant({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.plant,
+        zIndex: 4,
       }}
     >
       <img
