@@ -60,37 +60,6 @@ async function add_tree_point(pointsToAdd: number) {
   
 }
 
-// calls postgreSQL func add_tree_points()
-// Temporary testing function.
-// Adds 4 points to the shared tree.
-async function add4_tree_points() {
-  // Calls RPC func
-  const { data, error } = await supabase.rpc('add_tree_points', {points_to_add: 4});
-
-  console.log("RPC Data:", data);
-  console.log("RPC Error:", error);
-
-  // log error
-  if (error) {
-    console.error("Error adding point: ", error);
-    // updates front-end
-    setMessage("Point could not be added.");
-
-    return;
-  }
-
-  // Updates the page directly from the returned SQL data.
-  if (data && data.length > 0) {
-    setPoints(data[0].new_total_points);
-    setStage(data[0].new_tree_stage);
-  }
-
-  // reloads tree data after successful update
-  await loadTree();
-
-  setMessage("Added +4 point !");
-  
-}
 /*
   // runs once the page loads and the [] meanas that it only runs on first render
   useEffect(() => {
@@ -119,13 +88,6 @@ async function add4_tree_points() {
       <p>Tree Stage: {stage}</p>
       {/*PomodoroTimer component */}
       <PomodoroTimer onEarnpoint={add_tree_point} />
-
-      <button
-        onClick={add4_tree_points}
-        className="rounded-lg bg-green-700 px-4 py-2 text-white"
-      >
-        Add +4 Tree Point
-      </button>
 
       <p>{message}</p>
     </main>

@@ -8,6 +8,7 @@ type PomodoroTimerProps = {
     onEarnpoint: (pointsToAdd: number) => Promise<void> | void;
 };
 
+
 // Minimum timer length 20min
 const MIN_MINUTES = 20;
 
@@ -23,7 +24,9 @@ const SECONDS_PER_MINUTE = 60;
 // user earns 1 point every 20min
 const Point_Interval = 20 * SECONDS_PER_MINUTE;
 
+// user earns bonus points every 30min
 const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
+
 
 // main pomodoro timer component.
 export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
@@ -42,6 +45,9 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
     // tracks how many 30min bonus rewards have been given
     const rewardedBonusSecondsRef = useRef(0);
+
+    // Tracks whether the break reminder pop-up should be shown.
+    const [showBreakReminder, setShowBreakReminder] = useState(false);
 
     // seconds into MM:SS format
     function formatTime(totalSeconds: number) {
@@ -107,6 +113,9 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
         rewardedNormalSecondsRef.current = 0;
 
         rewardedBonusSecondsRef.current = 0;
+
+        // Hides the break reminder pop-up.
+        setShowBreakReminder(false);
     }
 
     useEffect(() => {
@@ -122,6 +131,9 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
                 // stops timer if reaches 0
                 if (previousSeconds <= 1){ 
                     setIsRunning(false);
+
+                    // Shows the break reminder pop-up.
+                    setShowBreakReminder(true);
 
                     return 0; // returns 0 so timer doesn't go negative
                 }
@@ -235,6 +247,37 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
           Reset
         </button>
       </div>
+
+      {/* break reminder pop-up */}
+      {/* && like a if condition (if true, redner this) */}
+      {showBreakReminder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="w-[90%] max-w-md rounded-xl bg-neutral-900 p-6 text-center text-white shadow-lg">
+            {/* Pop-up title */}
+            <h2 className="mb-3 text-2xl font-bold">
+              Focus Session Complete!
+            </h2>
+
+            {/* Study time reminder */}
+            <p className="mb-4 text-neutral-300">
+              Good work! You&apos;ve been studying for {selectedMinutes} minutes.
+            </p>
+
+            {/* Break suggestion */}
+            <p className="mb-6 text-neutral-300">
+              It would be good to stretch, get some water or food, and rest for a bit.
+            </p>
+
+            {/* Close button */}
+            <button
+              onClick={() => setShowBreakReminder(false)}
+              className="rounded-lg bg-green-700 px-4 py-2 text-white hover:bg-green-600"
+            >
+              Got it :)
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
