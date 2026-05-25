@@ -181,14 +181,25 @@ export default function StudyRoom() {
   }, []);
 
   const roomContent = (
-    <div className="fixed inset-0 flex items-center justify-center bg-stone-900 overflow-hidden">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1c1917",
+        overflow: "hidden",
+      }}
+    >
       <div
         className="relative"
         style={{
           width: 1400,
           height: 900,
+          flexShrink: 0,
           transform: `scale(${scale})`,
-          transformOrigin: "center",
+          transformOrigin: "center center",
         }}
       >
         {/* FLOOR */}
@@ -383,7 +394,7 @@ export default function StudyRoom() {
         ))} */}
 
         {/* CAT — always wandering */}
-        <Cat playerX={playerX} playerY={playerY} />
+        <Cat />
 
         {/* Avatar — only shown when selected */}
         {avatarType && (

@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 
 const ROOM_W = 1400;
 const ROOM_H = 900;
-// Leave a small margin so the room doesn't kiss the viewport edges
 const MARGIN = 16;
 
 export function useRoomScale() {
@@ -14,8 +13,9 @@ export function useRoomScale() {
     function update() {
       const scaleX = (window.innerWidth  - MARGIN * 2) / ROOM_W;
       const scaleY = (window.innerHeight - MARGIN * 2) / ROOM_H;
-      // Use whichever axis is the tighter fit, capped at 1× (never upscale)
-      setScale(Math.min(scaleX, scaleY, 1));
+      // No upper cap — allows slight upscaling on large screens
+      // No lower cap — allows shrinking as small as needed on mobile
+      setScale(Math.min(scaleX, scaleY));
     }
 
     update();
