@@ -56,8 +56,8 @@ async function add_tree_point(pointsToAdd: number) {
   }
 
 
-  setMessage(`Added +${pointsToAdd} point(s)!`);
-  
+    setMessage(`Added +${pointsToAdd} point(s)!`);
+   
 }
 
 // calls postgreSQL func add_tree_points()
@@ -125,7 +125,7 @@ async function add4_tree_points() {
         className="rounded-lg bg-green-700 px-4 py-2 text-white"
       >
         Add +4 Tree Point
-      </button>
+      </button>    
 
       <p>{message}</p>
     </main>
