@@ -41,8 +41,9 @@ import Glow from "../../components/glow";
 import { useRef, useState, useEffect, useCallback } from "react";
 import Avatar from "../avatar/avatar";
 import AvatarSelect, { AvatarType } from "../avatar/avatar_select";
+import Cat from "../cat/cat";
 import { SEATS } from "../../lib/roomLayout";
-import { isBlocked } from "../../lib/collisions";
+import { isBlocked, OBSTACLES } from "../../lib/collisions";
 import { findPath } from "../../lib/pathfinding";
 
 const WALL_TILE = { w: 32, h: 96 };
@@ -373,6 +374,16 @@ export default function StudyRoom() {
             <BookStack2 x={415} y={715} />
             <BookStack3 x={560} y={810} />
             <BookStack4 x={910} y={130} />
+
+        {/* COLLISION DEBUG — remove when done
+        {OBSTACLES.map((o, i) => (
+          <div key={`obs-${i}`} className="absolute pointer-events-none"
+            style={{ left: o.x, top: o.y, width: o.w, height: o.h,
+                     background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
+        ))} */}
+
+        {/* CAT — always wandering */}
+        <Cat playerX={playerX} playerY={playerY} />
 
         {/* Avatar — only shown when selected */}
         {avatarType && (

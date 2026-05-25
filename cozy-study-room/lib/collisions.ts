@@ -33,14 +33,14 @@ export const OBSTACLES: Rect[] = [
   { x: 80,   y: 530, w: 56,  h: 122 }, // NarrowTableV
 
   // XL TABLES
-  { x: 1100, y: 180, w: 240, h: 100 }, // XLTableH
-  { x: 900,  y: 380, w: 240, h: 100 }, // XLTableH
+  { x: 1100, y: 180, w: 240, h: 160 }, // XLTableH
+  { x: 900,  y: 380, w: 240, h: 160 }, // XLTableH
 
   // BOTTOM-RIGHT SOFA NOOK
   { x: 1225, y: 740, w: 56,  h: 60  }, // SmallTable
 
   // BOTTOM-LEFT READING NOOK
-  { x: 180,  y: 694, w: 120, h: 122 }, // Table
+  { x: 180,  y: 694, w: 120, h: 150 }, // Table
 
   // SOFA + TABLE COMBO (center bottom)
   { x: 902,  y: 740, w: 120, h: 60  }, // NarrowTableH
@@ -62,15 +62,28 @@ export const OBSTACLES: Rect[] = [
   { x: 198,  y: 20,  w: 188, h: 80  }, // LargeShelf
   { x: 1016, y: 20,  w: 188, h: 80  }, // LargeShelf
   { x: 1204, y: 20,  w: 188, h: 80  }, // LargeShelf
-  { x: 1280, y: 520, w: 120, h: 60  }, // MedShelf
-  { x: 1150, y: 520, w: 120, h: 60  }, // MedShelf
-  { x: 1020, y: 520, w: 120, h: 60  }, // MedShelf
-  { x: 890,  y: 520, w: 120, h: 60  }, // MedShelf
+  { x: 1280, y: 520, w: 120, h: 100  }, // MedShelf
+  { x: 1150, y: 520, w: 120, h: 100  }, // MedShelf
+  { x: 1020, y: 520, w: 120, h: 100  }, // MedShelf
+  { x: 890,  y: 520, w: 120, h: 100  }, // MedShelf
 
   // LADDERS
   { x: 80,   y: 25,  w: 65,  h: 80  }, // Ladder
   { x: 1100, y: 25,  w: 65,  h: 80  }, // Ladder
   { x: 1320, y: 535, w: 65,  h: 80  }, // Ladder
+
+  // BOOKS
+  { x: 410,   y: 710, w: 40,  h: 50  }, // Books
+  { x: 560,   y: 805, w: 50,  h: 50  }, // Books
+
+  //LAMPS
+  { x: 850,   y: 715, w: 40,  h: 85  }, // Lamps
+  { x: 1150,  y: 620, w: 40,  h: 85  }, // Lamps
+  { x: 25,  y: 440, w: 40,  h: 85  }, // Lamps
+
+  // XL TABLES + CHAIRS
+  { x: 1100, y: 180, w: 240, h: 100 }, // XLTableH
+
 
 ];
 
