@@ -41,8 +41,10 @@ import Glow from "../../components/glow";
 import { useRef, useState, useEffect, useCallback } from "react";
 import Avatar from "../avatar/avatar";
 import AvatarSelect, { AvatarType } from "../avatar/avatar_select";
+import Cat from "../cat/cat";
+import { useTreeCounter } from "../../lib/useTreeCounter";
 import { SEATS } from "../../lib/roomLayout";
-import { isBlocked } from "../../lib/collisions";
+import { isBlocked, OBSTACLES } from "../../lib/collisions";
 import { findPath } from "../../lib/pathfinding";
 
 const WALL_TILE = { w: 32, h: 96 };
@@ -94,6 +96,7 @@ function SeatHitZone({
 
 export default function StudyRoom() {
   const scale = useRoomScale();
+  const { stage: treeStage, addPoints } = useTreeCounter();
 
   const [avatarType, setAvatarType] = useState<AvatarType | null>(null);
   const [hasChosenSeat, setHasChosenSeat] = useState(false);
@@ -180,14 +183,25 @@ export default function StudyRoom() {
   }, []);
 
   const roomContent = (
-    <div className="fixed inset-0 flex items-center justify-center bg-stone-900 overflow-hidden">
+    <div
+      style={{
+        position: "fixed",
+        inset: 0,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "#1c1917",
+        overflow: "hidden",
+      }}
+    >
       <div
         className="relative"
         style={{
           width: 1400,
           height: 900,
+          flexShrink: 0,
           transform: `scale(${scale})`,
-          transformOrigin: "center",
+          transformOrigin: "center center",
         }}
       >
         {/* FLOOR */}
@@ -222,7 +236,8 @@ export default function StudyRoom() {
         <div className="absolute pointer-events-none animate-pulse" style={{ left: 270, top: 70, width: 220, height: 500, opacity: 0.7, background: "linear-gradient(to bottom, rgba(255,240,200,0.25), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
         <div className="absolute pointer-events-none animate-pulse" style={{ left: 730, top: 70, width: 160, height: 420, opacity: 0.5, background: "linear-gradient(to bottom, rgba(255,240,200,0.2), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
 
-        <Tree x={470} y={40} />
+        {/* TREE */}
+        <Tree stage={treeStage} x={700} y={380} />
 
           {/* back wall */}
             <LargeShelf x={10}   y={20} />
@@ -373,6 +388,16 @@ export default function StudyRoom() {
             <BookStack2 x={415} y={715} />
             <BookStack3 x={560} y={810} />
             <BookStack4 x={910} y={130} />
+
+        {/* COLLISION DEBUG — remove when done
+        {OBSTACLES.map((o, i) => (
+          <div key={`obs-${i}`} className="absolute pointer-events-none"
+            style={{ left: o.x, top: o.y, width: o.w, height: o.h,
+                     background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
+        ))} */}
+
+        {/* CAT — always wandering */}
+        <Cat />
 
         {/* Avatar — only shown when selected */}
         {avatarType && (
