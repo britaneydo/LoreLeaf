@@ -42,6 +42,7 @@ import { useRef, useState, useEffect, useCallback } from "react";
 import Avatar from "../avatar/avatar";
 import AvatarSelect, { AvatarType } from "../avatar/avatar_select";
 import Cat from "../cat/cat";
+import { useTreeCounter } from "../../lib/useTreeCounter";
 import { SEATS } from "../../lib/roomLayout";
 import { isBlocked, OBSTACLES } from "../../lib/collisions";
 import { findPath } from "../../lib/pathfinding";
@@ -95,6 +96,7 @@ function SeatHitZone({
 
 export default function StudyRoom() {
   const scale = useRoomScale();
+  const { stage: treeStage, addPoints } = useTreeCounter();
 
   const [avatarType, setAvatarType] = useState<AvatarType | null>(null);
   const [hasChosenSeat, setHasChosenSeat] = useState(false);
@@ -234,7 +236,8 @@ export default function StudyRoom() {
         <div className="absolute pointer-events-none animate-pulse" style={{ left: 270, top: 70, width: 220, height: 500, opacity: 0.7, background: "linear-gradient(to bottom, rgba(255,240,200,0.25), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
         <div className="absolute pointer-events-none animate-pulse" style={{ left: 730, top: 70, width: 160, height: 420, opacity: 0.5, background: "linear-gradient(to bottom, rgba(255,240,200,0.2), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
 
-        <Tree x={470} y={40} />
+        {/* TREE */}
+        <Tree stage={treeStage} x={700} y={380} />
 
           {/* back wall */}
             <LargeShelf x={10}   y={20} />
