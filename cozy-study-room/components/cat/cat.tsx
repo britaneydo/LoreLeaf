@@ -191,6 +191,15 @@ export default function Cat() {
   const [anim,  setAnim]  = useState<AnimKey>("loaf_left");
   const [frame, setFrame] = useState(0);
 
+  // Preload all sprite images so Vercel CDN doesn't cause blink on anim switch
+useEffect(() => {
+  const srcs = [...new Set(Object.values(ANIMS).map(a => a.src))];
+  srcs.forEach(src => {
+    const img = new Image();
+    img.src = src;
+  });
+  }, []);
+
   const posRef      = useRef({ x: 500, y: 450 });
   const animRef     = useRef<AnimKey>("loaf_left");
   const pathRef     = useRef<{ x: number; y: number }[]>([]);
