@@ -12,7 +12,7 @@ export default function Clock({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: Z.shelf,
+        zIndex: Z.carpet,
       }}
     >
       <img
