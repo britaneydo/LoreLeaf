@@ -190,21 +190,27 @@ export default function Cat() {
   const [pos,   setPos]   = useState({ x: 500, y: 450 });
   const [anim,  setAnim]  = useState<AnimKey>("loaf_left");
   const [frame, setFrame] = useState(0);
-
-  // Preload all sprite images so Vercel CDN doesn't cause blink on anim switch
-useEffect(() => {
-  const srcs = [...new Set(Object.values(ANIMS).map(a => a.src))];
-  srcs.forEach(src => {
-    const img = new Image();
-    img.src = src;
-  });
-  }, []);
+  const [ready, setReady] = useState(false);
 
   const posRef      = useRef({ x: 500, y: 450 });
   const animRef     = useRef<AnimKey>("loaf_left");
   const pathRef     = useRef<{ x: number; y: number }[]>([]);
   const lastWalkRef = useRef<AnimKey>("walk_down");
   const stuckRef    = useRef({ x: 500, y: 450, ticks: 0 });
+
+  // Preload all sprite images; only start the brain once every image has loaded
+  useEffect(() => {
+    const srcs = [...new Set(Object.values(ANIMS).map(a => a.src))];
+    let loaded = 0;
+    srcs.forEach(src => {
+      const img = new Image();
+      img.onload = img.onerror = () => {
+        loaded++;
+        if (loaded === srcs.length) setReady(true);
+      };
+      img.src = src;
+    });
+  }, []);
 
   const setAnimSafe = (a: AnimKey) => {
     animRef.current = a;
@@ -270,8 +276,9 @@ useEffect(() => {
     return () => clearInterval(id);
   }, []);
 
-  // brain of cat
+  // brain of cat; only runs once all sprites are loaded
   useEffect(() => {
+    if (!ready) return;
     let cancelled = false;
 
     async function transitionToSit() {
@@ -316,7 +323,7 @@ useEffect(() => {
 
     think();
     return () => { cancelled = true; };
-  }, []);
+  }, [ready]);
 
   const cfg = ANIMS[anim];
   const isStatic = anim in STATIC_FRAMES;
