@@ -18,7 +18,7 @@ type AnimKey =
   | "walk_right_down" | "walk_right_up" | "walk_left_down" | "walk_left_up";
 
 const ANIMS: Record<AnimKey, { src: string; frameWidth: number; frameHeight: number; frames: number; fps: number }> = {
-  // Sitting 
+  // Sitting
   sit_down:       { src: "/assets/cat/sit.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
   sit_up:         { src: "/assets/cat/sit.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
   sit_left:       { src: "/assets/cat/sit.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
@@ -40,7 +40,7 @@ const ANIMS: Record<AnimKey, { src: string; frameWidth: number; frameHeight: num
   lay_left_down:  { src: "/assets/cat/lay.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
   lay_right_down: { src: "/assets/cat/lay.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
 
-  // sleeping
+  // Sleeping
   sleepLeft:  { src: "/assets/cat/sleepLeft.png",  frameWidth: 32, frameHeight: 32, frames: 2, fps: 3 },
   sleepRight: { src: "/assets/cat/sleepRight.png", frameWidth: 32, frameHeight: 32, frames: 2, fps: 3 },
 
@@ -59,7 +59,7 @@ const ANIMS: Record<AnimKey, { src: string; frameWidth: number; frameHeight: num
   stand_right_up:   { src: "/assets/cat/stand.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
   stand_left_up:    { src: "/assets/cat/stand.png", frameWidth: 32, frameHeight: 32, frames: 1, fps: 1 },
 
-  // walking
+  // Walking
   walk_right:      { src: "/assets/cat/walkRight.png",     frameWidth: 32, frameHeight: 32, frames: 8, fps: 12 },
   walk_left:       { src: "/assets/cat/walkLeft.png",      frameWidth: 32, frameHeight: 32, frames: 8, fps: 12 },
   walk_down:       { src: "/assets/cat/walkDown.png",      frameWidth: 32, frameHeight: 32, frames: 4, fps: 10 },
@@ -80,33 +80,36 @@ const STATIC_FRAMES: Partial<Record<AnimKey, number>> = {
   loafNap_left: 0, loafNap_right: 1,
 };
 
+// Deduplicated list of unique sprite src files
+const UNIQUE_SRCS = [...new Set(Object.values(ANIMS).map(a => a.src))];
+
 // DISPLAY & BEHAVIOUR CONFIG
 
-const DISPLAY_SCALE   = 1.8;
-const CAT_SPEED       = 0.6;
-const DIAG_THRESHOLD  = 0.4;
-const ROOM_LEFT       = 80;
-const ROOM_RIGHT      = 1320;
-const ROOM_TOP        = 110;
-const ROOM_BOTTOM     = 860;
+const DISPLAY_SCALE  = 1.8;
+const CAT_SPEED      = 0.6;
+const DIAG_THRESHOLD = 0.4;
+const ROOM_LEFT      = 80;
+const ROOM_RIGHT     = 1320;
+const ROOM_TOP       = 110;
+const ROOM_BOTTOM    = 860;
 
-// smaller number = lazier cat;; library setting so super lazy cat
+// smaller number = lazier cat
 const WALK_CHANCE = 0.1;
 
 type IdleBehaviour = { anim: AnimKey; minMs: number; maxMs: number };
 const IDLE_BEHAVIOURS: IdleBehaviour[] = [
-  { anim: "loaf_left",    minMs: 5000,  maxMs: 12000 },
-  { anim: "loaf_left",    minMs: 4000,  maxMs: 10000 }, // weighted heavier
-  { anim: "loaf_right",   minMs: 5000,  maxMs: 12000 },
-  { anim: "loafNap_left", minMs: 6000,  maxMs: 14000 },
-  { anim: "loafNap_right",minMs: 6000,  maxMs: 14000 },
-  { anim: "lay_down",     minMs: 4000,  maxMs: 10000 },
-  { anim: "sleepLeft",    minMs: 8000,  maxMs: 20000 },
-  { anim: "sleepRight",   minMs: 8000,  maxMs: 20000 },
-  { anim: "sitWash",      minMs: 4000,  maxMs: 9000  },
-  { anim: "standWash",    minMs: 3000,  maxMs: 7000  },
-  { anim: "layWash",      minMs: 4000,  maxMs: 9000  },
-  { anim: "stand_down",   minMs: 2000,  maxMs: 5000  },
+  { anim: "loaf_left",     minMs: 5000, maxMs: 12000 },
+  { anim: "loaf_left",     minMs: 4000, maxMs: 10000 }, // weighted heavier
+  { anim: "loaf_right",    minMs: 5000, maxMs: 12000 },
+  { anim: "loafNap_left",  minMs: 6000, maxMs: 14000 },
+  { anim: "loafNap_right", minMs: 6000, maxMs: 14000 },
+  { anim: "lay_down",      minMs: 4000, maxMs: 10000 },
+  { anim: "sleepLeft",     minMs: 8000, maxMs: 20000 },
+  { anim: "sleepRight",    minMs: 8000, maxMs: 20000 },
+  { anim: "sitWash",       minMs: 4000, maxMs: 9000  },
+  { anim: "standWash",     minMs: 3000, maxMs: 7000  },
+  { anim: "layWash",       minMs: 4000, maxMs: 9000  },
+  { anim: "stand_down",    minMs: 2000, maxMs: 5000  },
 ];
 
 // HELPERS
@@ -194,13 +197,16 @@ export default function Cat() {
 
   const posRef      = useRef({ x: 500, y: 450 });
   const animRef     = useRef<AnimKey>("loaf_left");
+  const frameRef    = useRef(0);
   const pathRef     = useRef<{ x: number; y: number }[]>([]);
   const lastWalkRef = useRef<AnimKey>("walk_down");
   const stuckRef    = useRef({ x: 500, y: 450, ticks: 0 });
 
-  // Preload all sprite images; only start the brain once every image has loaded
+  // Preload all sprites; only start the brain once every image has loaded.
+  // We also keep hidden <img> tags in the DOM (see render) so the browser
+  // never evicts them from its cache between animation switches.
   useEffect(() => {
-    const srcs = [...new Set(Object.values(ANIMS).map(a => a.src))];
+    const srcs = UNIQUE_SRCS;
     let loaded = 0;
     srcs.forEach(src => {
       const img = new Image();
@@ -213,17 +219,24 @@ export default function Cat() {
   }, []);
 
   const setAnimSafe = (a: AnimKey) => {
+    const staticFrame = STATIC_FRAMES[a] ?? 0;
     animRef.current = a;
+    frameRef.current = staticFrame;
     setAnim(a);
-    setFrame(STATIC_FRAMES[a] ?? 0);
+    setFrame(staticFrame);
   };
 
   // frame ticker
   useEffect(() => {
     if (anim in STATIC_FRAMES) return;
+    frameRef.current = 0;
     setFrame(0);
     const cfg = ANIMS[anim];
-    const id = setInterval(() => setFrame(f => (f + 1) % cfg.frames), Math.round(1000 / cfg.fps));
+    const id = setInterval(() => {
+      const next = (frameRef.current + 1) % cfg.frames;
+      frameRef.current = next;
+      setFrame(next);
+    }, Math.round(1000 / cfg.fps));
     return () => clearInterval(id);
   }, [anim]);
 
@@ -265,7 +278,6 @@ export default function Cat() {
       posRef.current = { x: rx, y: ry };
       setPos({ x: rx, y: ry });
 
-      // detect if cat is stuck (not moving for a while) and reset path if so
       const s = stuckRef.current;
       if (Math.abs(rx - s.x) < 0.5 && Math.abs(ry - s.y) < 0.5) {
         if (++s.ticks > 120) { pathRef.current = []; s.ticks = 0; }
@@ -300,7 +312,6 @@ export default function Cat() {
 
       while (!cancelled) {
         if (Math.random() < WALK_CHANCE) {
-          // walk to a random spot
           const target = randomWalkTarget();
           if (!isBlocked(target.x, target.y)) {
             pathRef.current = findPath(posRef.current.x, posRef.current.y, target.x, target.y);
@@ -309,7 +320,6 @@ export default function Cat() {
           if (cancelled) break;
           await transitionToSit();
         } else {
-          // Settle into a stationary behaviour
           const b = IDLE_BEHAVIOURS[Math.floor(Math.random() * IDLE_BEHAVIOURS.length)];
           const chosenAnim = resolveDirection(b.anim);
           setAnimSafe(chosenAnim);
@@ -327,21 +337,38 @@ export default function Cat() {
 
   const cfg = ANIMS[anim];
   const isStatic = anim in STATIC_FRAMES;
+  const bgX = (isStatic ? (STATIC_FRAMES[anim] ?? 0) : frame) * cfg.frameWidth;
 
   return (
-    <div style={{
-      position: "absolute",
-      left: pos.x,
-      top: pos.y,
-      width: cfg.frameWidth,
-      height: cfg.frameHeight,
-      transform: `translate(-50%, -50%) scale(${DISPLAY_SCALE})`,
-      transformOrigin: "center",
-      backgroundImage: `url('${cfg.src}')`,
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: `-${(isStatic ? (STATIC_FRAMES[anim] ?? 0) : frame) * cfg.frameWidth}px 0px`,
-      imageRendering: "pixelated",
-      zIndex: 6,
-    }} />
+    <>
+      {/* Hidden imgs keep every sprite pinned in the browser's memory cache.
+          Without these, some browsers evict background-image resources between
+          animation switches, causing blink even after preloading. */}
+      {UNIQUE_SRCS.map(src => (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          key={src}
+          src={src}
+          alt=""
+          aria-hidden="true"
+          style={{ position: "fixed", opacity: 0, pointerEvents: "none", width: 1, height: 1, top: -9999, left: -9999 }}
+        />
+      ))}
+
+      <div style={{
+        position: "absolute",
+        left: pos.x,
+        top: pos.y,
+        width: cfg.frameWidth,
+        height: cfg.frameHeight,
+        transform: `translate(-50%, -50%) scale(${DISPLAY_SCALE})`,
+        transformOrigin: "center",
+        backgroundImage: `url('${cfg.src}')`,
+        backgroundRepeat: "no-repeat",
+        backgroundPosition: `-${bgX}px 0px`,
+        imageRendering: "pixelated",
+        zIndex: 6,
+      }} />
+    </>
   );
 }
