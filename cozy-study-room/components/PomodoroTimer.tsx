@@ -1,11 +1,19 @@
 "use client"; // pomodoroTimer
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 
 type PomodoroTimerProps = {
     // function will run every time the user earns 1 tree point
     onEarnpoint: (pointsToAdd: number) => Promise<void> | void;
+
+    // Optional function when timer reaches 0 completes the study session
+    onSessionComplete?:
+    (
+        taskName: string,
+        durationMinutes: number,
+        pointsEarned: number
+    ) => Promise<void> | void;
 };
 
 
@@ -29,7 +37,7 @@ const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.
-export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
+export default function PomodoroTimer({ onEarnpoint, onSessionComplete}: PomodoroTimerProps) {
 
     // stores selected time
     const [selectedMinutes, setSelectedMinutes ] = useState(MIN_MINUTES);
@@ -37,7 +45,7 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
     const [secondsLeft, setSecondsLeft] = useState(MIN_MINUTES * SECONDS_PER_MINUTE);
     // tracks if timer is running but default state of pomodoro timer (off)
     const [isRunning, setIsRunning] = useState(false);
-    //
+    // tracks how many points were earned this session
     const [pointsEarnedThisSession, setPointsEarnedThisSession] = useState(0);
 
     // tracks # of completed focused seconds (20min interval)
@@ -46,7 +54,12 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
     // tracks how many 30min bonus rewards have been given
     const rewardedBonusSecondsRef = useRef(0);
 
-    // Tracks whether the break reminder pop-up should be shown.
+    // Ref version of the session points so the save has the most up-to-date value
+    const pointsEarnedRef = useRef(0);
+
+    // Prevents the completed session from being saved more than once
+    const sessionSavedRef = useRef(false);
+
     const [showBreakReminder, setShowBreakReminder] = useState(false);
 
     // seconds into MM:SS format
@@ -93,7 +106,12 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
     }
 
     // starts timer
-    function startTimer() {setIsRunning(true);}
+    function startTimer()
+    {
+        sessionSavedRef.current = false;
+
+        setIsRunning(true);
+    }
 
     // stops timer
     function stopTimer() {setIsRunning(false);}
@@ -108,15 +126,29 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
         // Resets points earned in this current timer session.
         setPointsEarnedThisSession(0);
+        pointsEarnedRef.current = 0;
 
         // resets rewwarded time tracker
         rewardedNormalSecondsRef.current = 0;
 
         rewardedBonusSecondsRef.current = 0;
 
-        // Hides the break reminder pop-up.
-        setShowBreakReminder(false);
+        sessionSavedRef.current = false;
     }
+
+    // Helper for awarding points locally and through the parent callback.
+    const awardPoints = useCallback(async (pointsToAdd: number) => {
+        pointsEarnedRef.current += pointsToAdd;
+
+        setPointsEarnedThisSession(pointsEarnedRef.current);
+
+        try {
+            await onEarnpoint(pointsToAdd);
+        } catch (error) {
+            console.error("Error awarding points:", error);
+        }
+    }, [onEarnpoint]);
+
 
     useEffect(() => {
         // if timer is not runnnig, do nothing
@@ -144,7 +176,7 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
         },1000);
             // cleans up interval when timer stops
             return () => clearInterval(intervalId)
-        });
+        }, [isRunning]);
 
         useEffect(() => {
             // calculates total session seconds
@@ -161,29 +193,40 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
             // if user not reached 20min or did
             if (shouldEarnNormalPoint) {
 
-            // updates rewards track
-            rewardedNormalSecondsRef.current += Point_Interval
+                // updates rewards track
+                rewardedNormalSecondsRef.current += Point_Interval;
 
-            // updates local point counter
-            setPointsEarnedThisSession((previousPoints) => previousPoints + 1);
-
-            // call parent function
-            onEarnpoint(1);
+                // Adds the point locally, tells the database to save it
+                void awardPoints(1);
             }
 
             if (shouldEarnBonusPoint) {
 
-            // updates rewards track
-            rewardedBonusSecondsRef.current += Bonus_Point_Interval
+                // updates rewards track
+                rewardedBonusSecondsRef.current += Bonus_Point_Interval;
 
-            // updates local point counter
-            setPointsEarnedThisSession((previousPoints) => previousPoints + 4);
-
-            // call parent function
-            onEarnpoint(4);
+                // Adds them locally, tells database to save it
+                void awardPoints(4);
+            
             }
 
-        }, [secondsLeft, selectedMinutes, onEarnpoint]);
+            // Save the completed session once the timer reaches 0.
+            // does not calculate points again but rather records what was earned.
+            if (secondsLeft === 0 && !sessionSavedRef.current)
+            {
+                sessionSavedRef.current = true;
+
+                if (onSessionComplete)
+                {
+                    Promise.resolve(
+                        onSessionComplete("Focus Session", selectedMinutes, pointsEarnedRef.current)
+                    ).catch((error) => {
+                        console.error("Error saving completed session:", error);
+                    })
+                }
+            }
+
+        }, [secondsLeft, selectedMinutes, onSessionComplete, awardPoints]);
 
  return (
     <section className="flex flex-col items-center gap-4 rounded-xl bg-neutral-800 p-6 text-white">

@@ -56,8 +56,8 @@ async function add_tree_point(pointsToAdd: number) {
   }
 
 
-  setMessage(`Added +${pointsToAdd} point(s)!`);
-  
+    setMessage(`Added +${pointsToAdd} point(s)!`);
+   
 }
 
 /*
