@@ -46,6 +46,7 @@ import { useTreeCounter } from "../../lib/useTreeCounter";
 import { SEATS } from "../../lib/roomLayout";
 import { isBlocked, OBSTACLES } from "../../lib/collisions";
 import { findPath } from "../../lib/pathfinding";
+import { TomatoButton } from "../PomodoroOverlay";
 
 const WALL_TILE = { w: 32, h: 96 };
 const SPEED = 2.5;
@@ -213,9 +214,14 @@ export default function StudyRoom() {
           imageRendering: "pixelated",
         }} />
 
-        {/* SEAT HIT ZONES — invisible click targets with hover glow */}
+        {/* SEAT HIT ZONES REMOVE COMMENT FOR DEBUGGING PURPOSES! makesseats glow upon hover + user can move seats
         {avatarType && SEATS.map((seat) => (
           <SeatHitZone key={seat.id} seat={seat} onGo={goToSeat} highlight={!hasChosenSeat} />
+        ))} */}
+
+        {/* SEAT HIT ZONES; only glow in the beginning */}
+        {avatarType && !hasChosenSeat && SEATS.map((seat) => (
+          <SeatHitZone key={seat.id} seat={seat} onGo={goToSeat} highlight={true} />
         ))}
 
         {/* Back wall with windows */}
@@ -448,6 +454,8 @@ export default function StudyRoom() {
             50%       { opacity: 1;   transform: scale(1.2); }
           }
         `}</style>
+
+       <TomatoButton addPoints={addPoints} />
 
       </div>
     </div>
