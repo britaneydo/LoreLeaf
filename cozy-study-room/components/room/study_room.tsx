@@ -455,7 +455,7 @@ export default function StudyRoom() {
           }
         `}</style>
 
-       <TomatoButton addPoints={addPoints} />
+       {hasChosenSeat && <TomatoButton addPoints={addPoints} />}
 
       </div>
     </div>
