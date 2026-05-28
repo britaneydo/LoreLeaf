@@ -232,7 +232,7 @@ export default function StudyRoom() {
             const isWindow = i % 5 === 2;
             return (
               <div key={`wall-${i}`} className="absolute"
-                style={{ left: i * WALL_TILE.w, top: 0, width: WALL_TILE.w, height: WALL_TILE.h }}>
+                style={{ left: i * WALL_TILE.w, top: 0, width: WALL_TILE.w, height: WALL_TILE.h, pointerEvents: "none", }}>
                 <img src="/assets/wall.png" className="absolute w-[32px] h-[96px] pixelated" />
                 {isWindow && <img src="/assets/window_narrow2.png" className="absolute pixelated" style={{ top: 18, width: 32, height: 54 }} />}
               </div>
