@@ -28,7 +28,7 @@ export const AVATAR_OPTIONS: AvatarType[] = [
 
 const SPRITE_SCALE = 3;
 // How much to inset the character grid from the frame edges (in px at display size)
-const FRAME_INSET = 32;
+const FRAME_INSET = 28;
 
 type Props = {
   onSelect: (avatar: AvatarType) => void;
@@ -36,55 +36,41 @@ type Props = {
 
 export default function AvatarSelect({ onSelect }: Props) {
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 1000,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(20, 14, 8, 0.80)",
-        backdropFilter: "blur(2px)",
-      }}
-    >
+    <>
       {/* Title above the panel */}
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
+      <div style={{ textAlign: "center", marginBottom: 16 }}>
         <h1 style={{
-          fontFamily: "monospace",
+          fontFamily: "PixelOperatorSC, monospace",
+          fontWeight: "bold",
           color: "#f5e6c8",
-          fontSize: 18,
-          letterSpacing: "0.25em",
+          fontSize: 40,
+          letterSpacing: "0.15em",
           textTransform: "uppercase",
           margin: "0 0 4px",
         }}>
           Choose Your Character
         </h1>
         <p style={{
-          fontFamily: "monospace",
+          fontFamily: "PixelOperatorSC, monospace",
           color: "#a89070",
-          fontSize: 11,
-          letterSpacing: "0.1em",
+          fontSize: 24,
+          letterSpacing: "0",
           margin: 0,
         }}>
           Select who you'd like to be in the library
         </p>
       </div>
 
-      {/* Single panel — pixel frame as background, characters inside */}
+      {/* Single panel */}
       <div
         style={{
           position: "relative",
-          // The frame image tiles/stretches — we use it as a CSS background so it
-          // can grow to fit whatever width the grid needs
           backgroundImage: "url('/assets/UI_Frame.png')",
-          backgroundSize: "100% 100%",    // stretch to fill the panel
+          backgroundSize: "100% 100%",
           imageRendering: "pixelated",
           padding: FRAME_INSET,
           display: "inline-block",
-          // Max width so it doesn't go edge-to-edge on wide screens
-          maxWidth: "90vw",
+          maxWidth: "95vw",
         }}
       >
         {/* Character grid inside the frame */}
@@ -92,10 +78,10 @@ export default function AvatarSelect({ onSelect }: Props) {
           style={{
             display: "flex",
             flexWrap: "wrap",
-            gap: 20,
+            gap: 16,
             justifyContent: "center",
             // Constrain so the frame stays a reasonable proportion
-            maxWidth: 500,
+            maxWidth: 480,
           }}
         >
           {AVATAR_OPTIONS.map((avatar) => (
@@ -118,8 +104,8 @@ export default function AvatarSelect({ onSelect }: Props) {
               <div
                 style={{
                   position: "relative",
-                  width: 80,
-                  height: 80,
+                  width: 72,
+                  height: 72,
                   flexShrink: 0,
                 }}
               >
@@ -141,10 +127,10 @@ export default function AvatarSelect({ onSelect }: Props) {
                   }}
                 />
               </div>
-              {/* Name */}
+              {/* Name of each character */}
               <span style={{
-                fontFamily: "monospace",
-                fontSize: 9,
+                fontFamily: "PixelOperatorSC, monospace",
+                fontSize: 12,
                 letterSpacing: "0.15em",
                 textTransform: "uppercase",
                 color: "#000000",
@@ -163,7 +149,27 @@ export default function AvatarSelect({ onSelect }: Props) {
         .avatar-btn:active {
           transform: scale(0.95);
         }
+
+        @font-face {
+          font-family: 'PixelOperator';
+          src: url('/fonts/PixelOperator.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: 'PixelOperatorSC';
+          src: url('/fonts/PixelOperatorSC.ttf') format('truetype');
+          font-weight: normal;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: 'PixelOperatorSC';
+          src: url('/fonts/PixelOperatorSC-Bold.ttf') format('truetype');
+          font-weight: bold;
+          font-style: normal;
+        }
+
       `}</style>
-    </div>
+    </>
   );
 }
