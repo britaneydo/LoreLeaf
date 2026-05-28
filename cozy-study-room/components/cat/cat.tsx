@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { findPath } from "../../lib/pathfinding";
-import { isBlocked } from "../../lib/collisions";
+import { isCatBlocked } from "../../lib/collisions_cat";
 
 // ANIMATION CONFIG
 
@@ -118,7 +118,7 @@ function randomWalkTarget() {
   for (let i = 0; i < 40; i++) {
     const x = ROOM_LEFT  + Math.random() * (ROOM_RIGHT  - ROOM_LEFT);
     const y = ROOM_TOP   + Math.random() * (ROOM_BOTTOM - ROOM_TOP);
-    if (!isBlocked(x, y)) return { x, y };
+    if (!isCatBlocked(x, y)) return { x, y };
   }
   return { x: 700, y: 500 };
 }
@@ -271,9 +271,9 @@ export default function Cat() {
       const nx = cx + Math.sign(dx) * Math.min(CAT_SPEED, Math.abs(dx));
       const ny = cy + Math.sign(dy) * Math.min(CAT_SPEED, Math.abs(dy));
       let rx = cx, ry = cy;
-      if      (!isBlocked(nx, ny)) { rx = nx; ry = ny; }
-      else if (!isBlocked(nx, cy)) { rx = nx; }
-      else if (!isBlocked(cx, ny)) { ry = ny; }
+      if      (!isCatBlocked(nx, ny)) { rx = nx; ry = ny; }
+      else if (!isCatBlocked(nx, cy)) { rx = nx; }
+      else if (!isCatBlocked(cx, ny)) { ry = ny; }
 
       posRef.current = { x: rx, y: ry };
       setPos({ x: rx, y: ry });
@@ -313,7 +313,7 @@ export default function Cat() {
       while (!cancelled) {
         if (Math.random() < WALK_CHANCE) {
           const target = randomWalkTarget();
-          if (!isBlocked(target.x, target.y)) {
+          if (!isCatBlocked(target.x, target.y)) {
             pathRef.current = findPath(posRef.current.x, posRef.current.y, target.x, target.y);
             await waitUntil(() => pathRef.current.length === 0, 20000);
           }
