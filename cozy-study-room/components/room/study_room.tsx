@@ -45,6 +45,7 @@ import Cat from "../cat/cat";
 import { useTreeCounter } from "../../lib/useTreeCounter";
 import { SEATS } from "../../lib/roomLayout";
 import { isBlocked, OBSTACLES } from "../../lib/collisions";
+import { isCatBlocked, OBSTACLES_CAT } from "../../lib/collisions_cat";
 import { findPath } from "../../lib/pathfinding";
 import { TomatoButton } from "../PomodoroOverlay";
 
@@ -404,6 +405,13 @@ export default function StudyRoom() {
 
         {/* CAT — always wandering */}
         <Cat />
+
+        {/* COLLISION DEBUG — remove when done 
+        {OBSTACLES_CAT.map((o, i) => (
+          <div key={`obs-${i}`} className="absolute pointer-events-none"
+            style={{ left: o.x, top: o.y, width: o.w, height: o.h,
+                     background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
+        ))} */}
 
         {/* Avatar — only shown when selected */}
         {avatarType && (

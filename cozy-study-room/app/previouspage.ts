@@ -79,17 +79,22 @@ async function add_tree_point(pointsToAdd: number) {
   // Runs the async function.
   useEffect(() => {async function fetchTreeOnLoad() {await loadTree();}  fetchTreeOnLoad(); }, []);
 
-
+  /*
   return (
+    
     <main className="min-h-screen flex flex-col items-center justify-center gap-4">
       <h1 className="text-3xl font-bold">Cozy Study Room</h1>
 
       <p>Tree Points: {points}</p>
       <p>Tree Stage: {stage}</p>
-      {/*PomodoroTimer component */}
+      {/*PomodoroTimer component }
       <PomodoroTimer onEarnpoint={add_tree_point} />
 
       <p>{message}</p>
     </main>
   );
+   */
+    
 }
+
+// easier redability
