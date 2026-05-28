@@ -465,16 +465,27 @@ export default function StudyRoom() {
 
        {hasChosenSeat && <TomatoButton addPoints={addPoints} />}
 
+        {/* Avatar select — inside the scaled room so it grows/shrinks with the room */}
+        {!avatarType && (
+          <div style={{
+            position: "absolute",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(20, 14, 8, 0.80)",
+            backdropFilter: "blur(2px)",
+          }}>
+            <AvatarSelect onSelect={(a) => setAvatarType(a)} />
+          </div>
+        )}
+
       </div>
     </div>
   );
 
-  return (
-    <>
-      {roomContent}
-      {!avatarType && (
-        <AvatarSelect onSelect={(a) => setAvatarType(a)} />
-      )}
-    </>
-  );
+  return <>{roomContent}</>;
+
 }
