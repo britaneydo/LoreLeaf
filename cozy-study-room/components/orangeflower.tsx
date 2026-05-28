@@ -13,6 +13,7 @@ export default function CarpetNarrow({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.carpet,
+        pointerEvents: "none",
       }}
     >
       <img

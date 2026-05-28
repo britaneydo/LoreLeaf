@@ -71,7 +71,7 @@ function SeatHitZone({
         top: seat.sitY,
         width: 48,
         height: 48,
-        zIndex: 999,
+        zIndex: 800,
         transform: "translate(-50%, -50%)",
         cursor: "pointer",
       }}
@@ -98,7 +98,8 @@ function SeatHitZone({
 
 export default function StudyRoom() {
   const scale = useRoomScale();
-  const { stage: treeStage, addPoints } = useTreeCounter();
+  const { stage: treeStage, totalPoints, maxPoints, 
+    nextGoal, nextStageName, pointsRemaining, addPoints } = useTreeCounter();
 
   const [avatarType, setAvatarType] = useState<AvatarType | null>(null);
   const [hasChosenSeat, setHasChosenSeat] = useState(false);
@@ -245,6 +246,7 @@ export default function StudyRoom() {
 
         {/* TREE */}
         <Tree stage={treeStage} x={700} y={380} />
+
 
           {/* back wall */}
             <LargeShelf x={10}   y={20} />
@@ -395,6 +397,68 @@ export default function StudyRoom() {
             <BookStack2 x={415} y={715} />
             <BookStack3 x={560} y={810} />
             <BookStack4 x={910} y={130} />
+
+        <div
+          style={{
+            position: "absolute",
+            left: 700,
+            top: 477,
+            transform: "translateX(-50%)",
+            zIndex: 2,
+            pointerEvents: "none",
+            padding: "8px 12px",
+            minWidth: 130,
+            borderRadius: 12,
+            background: "rgba(30, 24, 18, 0.82)",
+            border: "1px solid rgba(240, 216, 168, 0.45)",
+            color: "#f0d8a8",
+            fontFamily: "'PixelOperatorSC', monospace",
+            textAlign: "center",
+            boxShadow: "0 0 18px rgba(255, 180, 60, 0.25)",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: "bold",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginBottom: 4,
+            }}
+          >
+            Tree Progress
+          </div>
+
+          <div style={{ fontSize: 10 }}>
+            Points: {totalPoints} / {nextGoal}
+          </div>
+
+          <div style={{ fontSize: 9, marginTop: 3 }}>
+            {pointsRemaining > 0
+              ? `${pointsRemaining} points until ${nextStageName}`
+              : "Tree is fully grown!"}
+          </div>
+
+          <div
+            style={{
+              width: "100%",
+              height: 6,
+              marginTop: 6,
+              borderRadius: 999,
+              background: "rgba(255, 255, 255, 0.15)",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${Math.min((totalPoints / nextGoal) * 100, 100)}%`,
+                height: "100%",
+                borderRadius: 999,
+                background: "linear-gradient(90deg, #8fd694, #f0d878)",
+              }}
+            />
+          </div>
+        </div>
 
         {/* COLLISION DEBUG — remove when done
         {OBSTACLES.map((o, i) => (

@@ -10,22 +10,22 @@ type PomodoroTimerProps = {
 
 
 // Minimum timer length 20min
-const MIN_MINUTES = 20;
+const MIN_MINUTES = 1;
 
 // Maximum timer length 180min
 const MAX_MINUTES = 180;
 
 // increment/decrement for timer (5min)
-const STEP_MINUTES = 5;
+const STEP_MINUTES = 1;
 
 // How many seconds are in one minute
 const SECONDS_PER_MINUTE = 60;
 
 // user earns 1 point every 20min
-const Point_Interval = 20 * SECONDS_PER_MINUTE;
+const Point_Interval = .15 * SECONDS_PER_MINUTE;
 
 // user earns bonus points every 30min
-const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
+const Bonus_Point_Interval = .25 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.

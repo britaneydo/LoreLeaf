@@ -13,6 +13,7 @@ export default function Plant({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: 4,
+        pointerEvents: "none",
       }}
     >
       <img

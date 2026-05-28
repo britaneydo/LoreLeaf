@@ -13,6 +13,7 @@ export default function ShelfMedium({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.shelf,
+        pointerEvents: "none",
       }}
     >
       <img

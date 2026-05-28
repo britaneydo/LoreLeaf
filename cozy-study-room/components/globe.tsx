@@ -20,7 +20,8 @@ export default function Plant({ x, y }: Props) {
         className="w-[48px] h-[64px] pixelated"
         alt="globe"
         style={{
-          imageRendering: "pixelated",
+        imageRendering: "pixelated",
+        pointerEvents: "none",
         }}
       />
     </div>

@@ -13,6 +13,7 @@ export default function Clock({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.carpet,
+        pointerEvents: "none",
       }}
     >
       <img
@@ -20,7 +21,7 @@ export default function Clock({ x, y }: Props) {
         className="w-[44px] h-[118px] pixelated"
         alt="grandfather clock"
         style={{
-          imageRendering: "pixelated",
+        imageRendering: "pixelated",
         }}
       />
     </div>
