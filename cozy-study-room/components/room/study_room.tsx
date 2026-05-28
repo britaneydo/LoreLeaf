@@ -47,6 +47,7 @@ import { SEATS } from "../../lib/roomLayout";
 import { isBlocked, OBSTACLES } from "../../lib/collisions";
 import { findPath } from "../../lib/pathfinding";
 import { TomatoButton } from "../PomodoroOverlay";
+import { HeartButton } from "../../components/AboutButton";
 
 const WALL_TILE = { w: 32, h: 96 };
 const SPEED = 2.5;
@@ -106,6 +107,7 @@ export default function StudyRoom() {
   const [facing, setFacing] = useState<"left" | "right">("right");
   const [isMoving, setIsMoving] = useState(false);
   const [frame, setFrame] = useState(0);
+  const [pomodoroOpen, setPomodoroOpen] = useState(false);
 
   const pathRef = useRef<{ x: number; y: number }[]>([]);
   const playerXRef = useRef(700);
@@ -455,8 +457,9 @@ export default function StudyRoom() {
           }
         `}</style>
 
-       {hasChosenSeat && <TomatoButton addPoints={addPoints} />}
-
+        {hasChosenSeat && <HeartButton hidden={pomodoroOpen} />}
+        {hasChosenSeat && <TomatoButton addPoints={addPoints} onOpenChange={setPomodoroOpen} />}
+        
         {/* Avatar select — inside the scaled room so it grows/shrinks with the room */}
         {!avatarType && (
           <div style={{
