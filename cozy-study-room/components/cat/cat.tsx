@@ -94,7 +94,7 @@ const ROOM_TOP       = 110;
 const ROOM_BOTTOM    = 860;
 
 // smaller number = lazier cat
-const WALK_CHANCE = 0.1;
+const WALK_CHANCE = 0.2;
 
 type IdleBehaviour = { anim: AnimKey; minMs: number; maxMs: number };
 const IDLE_BEHAVIOURS: IdleBehaviour[] = [
