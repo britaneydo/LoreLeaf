@@ -116,7 +116,7 @@ export default function StudyRoom() {
 
   // Animation frames
   useEffect(() => {
-    if (!isMoving) { setFrame(0); return; }
+    if (!isMoving) { return; }
     const anim = setInterval(() => setFrame((f) => (f + 1) % 4), 120);
     return () => clearInterval(anim);
   }, [isMoving]);

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import PomodoroTimer from "./PomodoroTimer";
+import { saveCompletedStudySession } from "@/lib/databaseService";
 
 type TomatoButtonProps = {
-  addPoints: (pts: number) => void;
+  addPoints: (pts: number) => Promise<void> | void;
 };
 
 export function TomatoButton({ addPoints }: TomatoButtonProps) {
@@ -61,7 +62,7 @@ export function TomatoButton({ addPoints }: TomatoButtonProps) {
 
 type OverlayProps = {
   onClose: () => void;
-  addPoints: (pts: number) => void;
+  addPoints: (pts: number) => Promise<void> | void;
 };
 
 export default function PomodoroOverlay({ onClose, addPoints }: OverlayProps) {
@@ -145,7 +146,7 @@ export default function PomodoroOverlay({ onClose, addPoints }: OverlayProps) {
 // Skin
 // Wraps PomodoroTimer and overrides its Tailwind styles to match the pixel-art
 
-function PomodoroSkin({ addPoints }: { addPoints: (pts: number) => void }) {
+function PomodoroSkin({ addPoints }: { addPoints: (pts: number) => Promise<void> | void; }) {
   return (
     <div style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
 
@@ -171,7 +172,11 @@ function PomodoroSkin({ addPoints }: { addPoints: (pts: number) => void }) {
       />
 
       <div className="pomodoro-skin-wrapper">
-        <PomodoroTimer onEarnpoint={addPoints} />
+        <PomodoroTimer 
+            onEarnpoint={addPoints}
+            onSessionComplete={saveCompletedStudySession}
+        />
+
       </div>
 
       <style>{`
