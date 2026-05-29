@@ -40,29 +40,96 @@ import RightChair from "../../components/chair_right";
 import Glow from "../../components/glow";
 import { useRef, useState, useEffect, useCallback } from "react";
 import Avatar from "../avatar/avatar";
-import AvatarSelect, { AvatarType } from "../avatar/avatar_select";
+import AvatarSelect, { AvatarType, AVATAR_OPTIONS } from "../avatar/avatar_select";
 import Cat from "../cat/cat";
 import { useTreeCounter } from "../../lib/useTreeCounter";
 import { SEATS } from "../../lib/roomLayout";
-import { isBlocked, OBSTACLES } from "../../lib/collisions";
-import { isCatBlocked, OBSTACLES_CAT } from "../../lib/collisions_cat";
+import { isBlocked } from "../../lib/collisions";
+// for cat collision debugging
+// import { isCatBlocked, OBSTACLES_CAT } from "../../lib/collisions_cat";
 import { findPath } from "../../lib/pathfinding";
 import { TomatoButton } from "../PomodoroOverlay";
+import { HeartButton } from "../../components/AboutButton";
+import { useRoomPresence, OccupiedSeat } from "../../lib/useRoomPresence";
+import { useUser } from "../../lib/useUser";
 
 const WALL_TILE = { w: 32, h: 96 };
 const SPEED = 2.5;
 
+function avatarById(id: string): AvatarType {
+  return AVATAR_OPTIONS.find((a) => a.id === id) ?? AVATAR_OPTIONS[0];
+}
+
+// elapsed time for avatar hover
+function formatStudyTime(satDownAt: string): string {
+  const ms = Date.now() - new Date(satDownAt).getTime();
+  const totalMins = Math.floor(ms / 60000);
+  const hours = Math.floor(totalMins / 60);
+  const mins = totalMins % 60;
+  if (hours > 0) return `${hours}h ${mins}m`;
+  if (mins > 0) return `${mins}m`;
+  return "just sat down";
+}
+
+// hovering over another user's avatar
+function SeatTooltip({ seat }: { seat: OccupiedSeat }) {
+  const [, forceUpdate] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => forceUpdate((n) => n + 1), 60000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div style={{
+      position: "absolute",
+      bottom: "calc(100% + 8px)",
+      left: "50%",
+      transform: "translateX(-50%)",
+      zIndex: 1000,
+      pointerEvents: "none",
+      background: "rgba(20, 14, 8, 0.92)",
+      border: "1px solid rgba(240, 216, 168, 0.35)",
+      borderRadius: 6,
+      padding: "7px 11px",
+      minWidth: 130,
+      boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
+      fontFamily: "monospace",
+      whiteSpace: "nowrap",
+    }}>
+      <div style={{ color: "#f0d8a8", fontSize: 12, fontWeight: "bold", marginBottom: 3 }}>
+        {seat.display_name}
+      </div>
+      {seat.task_name && (
+        <div style={{ color: "#b0a090", fontSize: 11, marginBottom: 2 }}>
+          📖 {seat.task_name}
+        </div>
+      )}
+      <div style={{ color: "#7a9e7a", fontSize: 11 }}>
+        ⏱ {formatStudyTime(seat.sat_down_at)}
+      </div>
+    </div>
+  );
+}
+
+// Seat hit zone
 function SeatHitZone({
   seat,
+  occupiedBy,
+  isMe,
   onGo,
   highlight,
 }: {
   seat: typeof SEATS[0];
+  occupiedBy: OccupiedSeat | null;
+  isMe: boolean;
   onGo: (seat: typeof SEATS[0]) => void;
   highlight: boolean;
 }) {
   const [hovered, setHovered] = useState(false);
-  const glowVisible = highlight || hovered;
+  const isOccupied = occupiedBy !== null;
+  const showGlow = !isOccupied && (highlight || hovered);
+  const showTooltip = isOccupied && !isMe && hovered;
+
   return (
     <div
       className="absolute"
@@ -73,28 +140,32 @@ function SeatHitZone({
         height: 48,
         zIndex: 800,
         transform: "translate(-50%, -50%)",
-        cursor: "pointer",
+        cursor: isOccupied ? "default" : "pointer",
+        position: "absolute",
       }}
-      onClick={() => onGo(seat)}
+      onClick={() => { if (!isOccupied) onGo(seat); }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          borderRadius: "50%",
-          background: glowVisible
-            ? "radial-gradient(circle, rgba(255,200,80,0.6) 0%, rgba(255,150,30,0.3) 50%, transparent 75%)"
-            : "transparent",
-          transition: "background 0.15s ease",
-          animation: highlight && !hovered ? "seatPulse 1.8s ease-in-out infinite" : "none",
-          pointerEvents: "none",
-        }}
-      />
+      {/* Empty seat glow */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "50%",
+        background: showGlow
+          ? "radial-gradient(circle, rgba(255,200,80,0.6) 0%, rgba(255,150,30,0.3) 50%, transparent 75%)"
+          : "transparent",
+        transition: "background 0.15s ease",
+        animation: highlight && !hovered && !isOccupied ? "seatPulse 1.8s ease-in-out infinite" : "none",
+        pointerEvents: "none",
+      }} />
+
+      {/* Tooltip for occupied seats */}
+      {showTooltip && occupiedBy && <SeatTooltip seat={occupiedBy} />}
     </div>
   );
 }
+
 
 export default function StudyRoom() {
   const scale = useRoomScale();
@@ -108,12 +179,28 @@ export default function StudyRoom() {
   const [facing, setFacing] = useState<"left" | "right">("right");
   const [isMoving, setIsMoving] = useState(false);
   const [frame, setFrame] = useState(0);
+  const [pomodoroOpen, setPomodoroOpen] = useState(false);
 
-  const pathRef = useRef<{ x: number; y: number }[]>([]);
-  const playerXRef = useRef(700);
-  const playerYRef = useRef(500);
+  // Authentication from supabase
+  const { user, displayName } = useUser();
+  const userId = user?.id ?? null;
+
+  // Live presence — seats state, claim/vacate helpers
+  // avatarType.id is the string stored in the DB (e.g. "knight")
+  const { seats: occupiedSeats, claimSeat, vacateSeat } = useRoomPresence({
+    userId,
+    displayName,
+    avatarType: avatarType ? avatarType.id : null,
+  });
+
+  // Quick lookup: seat_id → OccupiedSeat
+  const occupiedMap = Object.fromEntries(occupiedSeats.map((s) => [s.seat_id, s]));
+
+  const pathRef         = useRef<{ x: number; y: number }[]>([]);
+  const playerXRef      = useRef(700);
+  const playerYRef      = useRef(500);
   const selectedSeatRef = useRef<typeof SEATS[0] | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const intervalRef     = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Animation frames
   useEffect(() => {
@@ -122,7 +209,7 @@ export default function StudyRoom() {
     return () => clearInterval(anim);
   }, [isMoving]);
 
-  // Single movement interval
+  // Movement loop
   useEffect(() => {
     intervalRef.current = setInterval(() => {
       const path = pathRef.current;
@@ -169,9 +256,7 @@ export default function StudyRoom() {
       setPlayerY(resolvedY);
     }, 16);
 
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, []);
 
   const goToSeat = useCallback((seat: typeof SEATS[0]) => {
@@ -183,9 +268,15 @@ export default function StudyRoom() {
     pathRef.current = newPath;
     setIsMoving(newPath.length > 0);
     setHasChosenSeat(true);
-  }, []);
+    claimSeat(seat.id);
+  }, [claimSeat]);
 
-  const roomContent = (
+  // Release seat
+  useEffect(() => {
+    return () => { vacateSeat(); };
+  }, [vacateSeat]);
+
+  return (
     <div
       style={{
         position: "fixed",
@@ -216,15 +307,38 @@ export default function StudyRoom() {
           imageRendering: "pixelated",
         }} />
 
-        {/* SEAT HIT ZONES REMOVE COMMENT FOR DEBUGGING PURPOSES! makesseats glow upon hover + user can move seats
-        {avatarType && SEATS.map((seat) => (
-          <SeatHitZone key={seat.id} seat={seat} onGo={goToSeat} highlight={!hasChosenSeat} />
-        ))} */}
+        {/* SEAT HIT ZONES glow initially */}
+        {avatarType && !hasChosenSeat && SEATS.map((seat) => {
+          const occupied = occupiedMap[seat.id] ?? null;
+          const isMe = occupied?.user_id === userId;
+          return (
+            <SeatHitZone
+              key={seat.id}
+              seat={seat}
+              occupiedBy={occupied}
+              isMe={isMe}
+              onGo={goToSeat}
+              highlight={!occupied}
+            />
+          );
+        })}
 
-        {/* SEAT HIT ZONES; only glow in the beginning */}
-        {avatarType && !hasChosenSeat && SEATS.map((seat) => (
-          <SeatHitZone key={seat.id} seat={seat} onGo={goToSeat} highlight={true} />
-        ))}
+        {/* After choosing a seat, keep hit zones for occupied seats (tooltips) */}
+        {avatarType && hasChosenSeat && SEATS.map((seat) => {
+          const occupied = occupiedMap[seat.id] ?? null;
+          const isMe = occupied?.user_id === userId;
+          if (!occupied) return null;
+          return (
+            <SeatHitZone
+              key={seat.id}
+              seat={seat}
+              occupiedBy={occupied}
+              isMe={isMe}
+              onGo={goToSeat}
+              highlight={false}
+            />
+          );
+        })}
 
         {/* Back wall with windows */}
         <div className="absolute overflow-hidden" style={{ left: 0, top: 0, width: 1400, height: WALL_TILE.h }}>
@@ -470,14 +584,31 @@ export default function StudyRoom() {
         {/* CAT — always wandering */}
         <Cat />
 
-        {/* COLLISION DEBUG — remove when done 
+        {/* COLLISION DEBUG — remove when done
         {OBSTACLES_CAT.map((o, i) => (
           <div key={`obs-${i}`} className="absolute pointer-events-none"
             style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                      background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
         ))} */}
 
-        {/* Avatar — only shown when selected */}
+        {/* OTHER USERS — look up their full AvatarType object from the id stored in the DB */}
+        {SEATS.map((seat) => {
+          const occupied = occupiedMap[seat.id];
+          if (!occupied || occupied.user_id === userId) return null;
+          return (
+            <Avatar
+              key={`other-${seat.id}`}
+              x={seat.sitX}
+              y={seat.sitY}
+              frame={0}
+              facing={seat.facing}
+              isMoving={false}
+              avatarType={avatarById(occupied.avatar_type)}
+            />
+          );
+        })}
+
+        {/* avatar */}
         {avatarType && (
           <Avatar
             x={playerX}
@@ -488,21 +619,20 @@ export default function StudyRoom() {
             avatarType={avatarType}
           />
         )}
+
         {/* FIND A SEAT PROMPT */}
         {avatarType && (
-          <div
-            style={{
-              position: "absolute",
-              top: 530,
-              left: 700,
-              transform: "translateX(-50%)",
-              zIndex: 998,
-              pointerEvents: "none",
-              opacity: hasChosenSeat ? 0 : 1,
-              transition: "opacity 0.6s ease",
-              whiteSpace: "nowrap",
-            }}
-          >
+          <div style={{
+            position: "absolute",
+            top: 530,
+            left: 700,
+            transform: "translateX(-50%)",
+            zIndex: 998,
+            pointerEvents: "none",
+            opacity: hasChosenSeat ? 0 : 1,
+            transition: "opacity 0.6s ease",
+            whiteSpace: "nowrap",
+          }}>
             <div style={{
               fontFamily: "monospace",
               fontSize: 13,
@@ -516,6 +646,7 @@ export default function StudyRoom() {
             </div>
           </div>
         )}
+
         <style>{`
           @keyframes seatPromptBob {
             0%, 100% { transform: translateY(0px); }
@@ -527,9 +658,10 @@ export default function StudyRoom() {
           }
         `}</style>
 
-       {hasChosenSeat && <TomatoButton addPoints={addPoints} />}
+        {hasChosenSeat && <HeartButton hidden={pomodoroOpen} />}
+        {hasChosenSeat && <TomatoButton addPoints={addPoints} onOpenChange={setPomodoroOpen} />}
 
-        {/* Avatar select — inside the scaled room so it grows/shrinks with the room */}
+        {/* Avatar select overlay */}
         {!avatarType && (
           <div style={{
             position: "absolute",
@@ -549,7 +681,4 @@ export default function StudyRoom() {
       </div>
     </div>
   );
-
-  return <>{roomContent}</>;
-
 }

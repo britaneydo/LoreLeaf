@@ -6,9 +6,11 @@ import { saveCompletedStudySession } from "@/lib/databaseService";
 
 type TomatoButtonProps = {
   addPoints: (pts: number) => Promise<void> | void;
+  onOpenChange: (open: boolean) => void;
+  hidden?: boolean;
 };
 
-export function TomatoButton({ addPoints }: TomatoButtonProps) {
+export function TomatoButton({ addPoints, onOpenChange, hidden }: TomatoButtonProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -23,8 +25,11 @@ export function TomatoButton({ addPoints }: TomatoButtonProps) {
           cursor: "pointer",
           animation: "tomatoBob 2.4s ease-in-out infinite",
           imageRendering: "pixelated",
+          opacity: hidden ? 0.4 : 1,
+          pointerEvents: hidden ? "none" : "auto",
+          transition: "opacity 0.2s ease",
         }}
-        onClick={() => setOpen(true)}
+        onClick={() => { setOpen(true); onOpenChange(true); }}
         title="Open Pomodoro Timer"
       >
         <img
@@ -43,7 +48,7 @@ export function TomatoButton({ addPoints }: TomatoButtonProps) {
         {/* allows pomodoro timer to run even when closed */}
       <div style={{ display: open ? "contents" : "none" }}>
         <PomodoroOverlay
-            onClose={() => setOpen(false)}
+            onClose={() => { setOpen(false); onOpenChange(false); }}
             addPoints={addPoints}
         />
         </div>
@@ -174,7 +179,6 @@ function PomodoroSkin({ addPoints }: { addPoints: (pts: number) => Promise<void>
       <div className="pomodoro-skin-wrapper">
         <PomodoroTimer 
             onEarnpoint={addPoints}
-            onSessionComplete={saveCompletedStudySession}
         />
 
       </div>
