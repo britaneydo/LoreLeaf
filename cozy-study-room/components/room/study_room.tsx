@@ -53,6 +53,8 @@ import { HeartButton } from "../../components/AboutButton";
 import { useRoomPresence, OccupiedSeat } from "../../lib/useRoomPresence";
 import { useUser } from "../../lib/useUser";
 import { DoorButton } from "../../components/DoorButton";
+import { useSharedCat } from "../../lib/useSharedCat";
+
 
 const WALL_TILE = { w: 32, h: 96 };
 const SPEED = 2.5;
@@ -187,6 +189,15 @@ export default function StudyRoom() {
   // Authentication from supabase
   const { user, displayName } = useUser();
   const userId = user?.id ?? null;
+
+  const { catState, isCatHost, broadcastCatState, } = useSharedCat(userId);
+
+  console.log("Shared cat status:", {
+        userId,
+        isCatHost,
+        catState,
+  });
+
 
   // Live presence — seats state, claim/vacate helpers
   // avatarType.id is the string stored in the DB (e.g. "knight")
@@ -603,7 +614,11 @@ export default function StudyRoom() {
         ))} */}
 
         {/* CAT - always wandering */}
-        <Cat />
+            <Cat
+                isHost={isCatHost}
+                sharedState={catState}
+                onHostStateChange={broadcastCatState}
+            />
 
         {/* COLLISION DEBUG - remove when done
         {OBSTACLES_CAT.map((o, i) => (

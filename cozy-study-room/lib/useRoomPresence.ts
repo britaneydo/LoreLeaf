@@ -33,6 +33,22 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
       });
   }, []);
 
+  // Cleans up any old seat row for this user when they enter the room.
+  // This prevents stale avatars from staying after refresh/crash/server stop.
+  useEffect(() => {
+      if (!userId) return;
+
+      async function cleanupOldSeat() {
+          await supabase
+              .from("room_seats")
+              .delete()
+              .eq("user_id", userId);
+      }
+
+        cleanupOldSeat();
+    }, [userId]);
+
+
   // LIVE. real time changes
   useEffect(() => {
     const channel = supabase

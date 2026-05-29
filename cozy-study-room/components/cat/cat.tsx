@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { findPath } from "../../lib/pathfinding";
 import { isCatBlocked } from "../../lib/collisions_cat";
+import type { CatState } from "../../lib/useSharedCat";
 
 // ANIMATION CONFIG
 
@@ -189,7 +190,13 @@ function waitUntil(condition: () => boolean, timeoutMs: number) {
 
 // COMPONENT
 
-export default function Cat() {
+type CatProps = {
+    isHost: boolean;
+    sharedState: CatState;
+    onHostStateChange: (nextCatState: CatState) => void;
+};
+
+export default function Cat({ isHost, sharedState, onHostStateChange,}: CatProps) {
   const [pos,   setPos]   = useState({ x: 500, y: 450 });
   const [anim,  setAnim]  = useState<AnimKey>("loaf_left");
   const [frame, setFrame] = useState(0);
@@ -201,6 +208,24 @@ export default function Cat() {
   const pathRef     = useRef<{ x: number; y: number }[]>([]);
   const lastWalkRef = useRef<AnimKey>("walk_down");
   const stuckRef    = useRef({ x: 500, y: 450, ticks: 0 });
+
+  // Non-host clients do not control the cat.
+  // They only copy the latest cat state received from Supabase.
+  useEffect(() => {
+      if (isHost || !sharedState) return;
+
+      const nextAnim: AnimKey =
+          sharedState.anim in ANIMS ? (sharedState.anim as AnimKey) : "loaf_left";
+
+      posRef.current = {
+          x: sharedState.x,
+          y: sharedState.y,
+      };
+
+      animRef.current = nextAnim;
+      frameRef.current = sharedState.frame;
+  }, [isHost, sharedState.x, sharedState.y, sharedState.anim, sharedState.frame]);
+
 
   // Preload all sprites; only start the brain once every image has loaded.
   // We also keep hidden <img> tags in the DOM (see render) so the browser
@@ -227,21 +252,25 @@ export default function Cat() {
   };
 
   // frame ticker
-  useEffect(() => {
-    if (anim in STATIC_FRAMES) return;
-    frameRef.current = 0;
-    setFrame(0);
-    const cfg = ANIMS[anim];
-    const id = setInterval(() => {
-      const next = (frameRef.current + 1) % cfg.frames;
-      frameRef.current = next;
-      setFrame(next);
-    }, Math.round(1000 / cfg.fps));
-    return () => clearInterval(id);
-  }, [anim]);
+  // Only the host can advance the cat's animation frames.
+    useEffect(() => {
+      if (!isHost) return;
+      if (anim in STATIC_FRAMES) return;
+
+      const cfg = ANIMS[anim];
+
+      const id = setInterval(() => {
+          const next = (frameRef.current + 1) % cfg.frames;
+          frameRef.current = next;
+          setFrame(next);
+        },Math.round(1000 / cfg.fps));
+
+      return () => clearInterval(id);
+    }, [isHost, anim]);
 
   // movement loop
-  useEffect(() => {
+    useEffect(() => {
+        if (!isHost) return;
     const id = setInterval(() => {
       const path = pathRef.current;
       if (path.length === 0) return;
@@ -286,11 +315,28 @@ export default function Cat() {
       }
     }, 16);
     return () => clearInterval(id);
-  }, []);
+  }, [isHost]);
+
+  // Host broadcasts the current cat state to other clients
+  useEffect(() => {
+      if (!isHost) return;
+
+      const id = setInterval(() => {
+          onHostStateChange({
+              x: posRef.current.x,
+              y: posRef.current.y,
+              anim: animRef.current,
+              frame: frameRef.current,
+              updated_at: Date.now(),
+            });
+        }, 150);
+
+        return () => clearInterval(id);
+  }, [isHost, onHostStateChange]);
 
   // brain of cat; only runs once all sprites are loaded
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || !isHost) return;
     let cancelled = false;
 
     async function transitionToSit() {
@@ -333,11 +379,31 @@ export default function Cat() {
 
     think();
     return () => { cancelled = true; };
-  }, [ready]);
+  }, [ready, isHost]);
 
-  const cfg = ANIMS[anim];
-  const isStatic = anim in STATIC_FRAMES;
-  const bgX = (isStatic ? (STATIC_FRAMES[anim] ?? 0) : frame) * cfg.frameWidth;
+    const safeSharedState: CatState = sharedState ?? {
+        x: 500,
+        y: 450,
+        anim: "loaf_left",
+        frame: 0,
+        updated_at: 0,
+    };
+
+    const renderAnim: AnimKey =
+        !isHost && safeSharedState.anim in ANIMS
+            ? (safeSharedState.anim as AnimKey)
+            : anim;
+
+    const renderFrame = !isHost ? safeSharedState.frame : frame;
+
+    const renderPos = !isHost
+        ? { x: safeSharedState.x, y: safeSharedState.y }
+        : pos;
+
+    const cfg = ANIMS[renderAnim];
+    const isStatic = renderAnim in STATIC_FRAMES;
+    const bgX =
+        (isStatic ? (STATIC_FRAMES[renderAnim] ?? 0) : renderFrame) * cfg.frameWidth;
 
   return (
     <>
@@ -357,8 +423,8 @@ export default function Cat() {
 
       <div style={{
         position: "absolute",
-        left: pos.x,
-        top: pos.y,
+        left: renderPos.x,
+        top: renderPos.y,
         width: cfg.frameWidth,
         height: cfg.frameHeight,
         transform: `translate(-50%, -50%) scale(${DISPLAY_SCALE})`,
