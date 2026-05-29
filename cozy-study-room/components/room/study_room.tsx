@@ -190,7 +190,7 @@ export default function StudyRoom() {
 
   // Live presence — seats state, claim/vacate helpers
   // avatarType.id is the string stored in the DB (e.g. "knight")
-  const { seats: occupiedSeats, claimSeat, vacateSeat } = useRoomPresence({
+  const { seats: occupiedSeats, playerCount, claimSeat, vacateSeat } = useRoomPresence({
     userId,
     displayName,
     avatarType: avatarType ? avatarType.id : null,
@@ -290,7 +290,28 @@ export default function StudyRoom() {
         background: "#1c1917",
         overflow: "hidden",
       }}
-    >
+      >
+          {/* Player count overlay */}
+      <div
+          style={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            zIndex: 3000,
+            padding: "6px 10px",
+            borderRadius: 8,
+            background: "rgba(20, 14, 8, 0.75)",
+            border: "1px solid rgba(240, 216, 168, 0.35)",
+            color: "#f0d8a8",
+            fontFamily: "'PixelOperatorSC', monospace",
+            fontSize: 14,
+            letterSpacing: "0.05em",
+            pointerEvents: "none",
+            boxShadow: "0 4px 14px rgba(0,0,0,0.45)",
+              }}
+          >
+            Player count: {playerCount}
+      </div>
       <div
       className="relative"
       style={{
@@ -301,6 +322,7 @@ export default function StudyRoom() {
         transformOrigin: "center center",
       }}
     >
+
       <div style={{
         position: "absolute",
         visibility: "hidden",

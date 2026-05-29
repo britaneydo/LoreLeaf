@@ -1,11 +1,17 @@
 "use client"; // pomodoroTimer
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 
 type PomodoroTimerProps = {
     // function will run every time the user earns 1 tree point
     onEarnpoint: (pointsToAdd: number) => Promise<void> | void;
+    onSessionComplete?: 
+    (
+        taskName: string,
+        durationMinutes: number,
+        pointsEarned: number
+    ) => Promise<void> | void;
 };
 
 
@@ -29,7 +35,7 @@ const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.
-export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
+export default function PomodoroTimer({onEarnpoint, onSessionComplete}: PomodoroTimerProps) {
 
     // stores selected time
     const [selectedMinutes, setSelectedMinutes ] = useState(MIN_MINUTES);
@@ -45,6 +51,12 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
     // tracks how many 30min bonus rewards have been given
     const rewardedBonusSecondsRef = useRef(0);
+
+    // Ref version of the session points so saving uses the most up-to-date value.
+    const pointsEarnedRef = useRef(0);
+
+    // Prevents the completed session from being saved more than once.
+    const sessionSavedRef = useRef(false);
 
     // Tracks whether the break reminder pop-up should be shown.
     const [showBreakReminder, setShowBreakReminder] = useState(false);
@@ -108,6 +120,8 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
         // Resets points earned in this current timer session.
         setPointsEarnedThisSession(0);
+        pointsEarnedRef.current = 0;
+        sessionSavedRef.current = false;
 
         // resets rewwarded time tracker
         rewardedNormalSecondsRef.current = 0;
@@ -117,6 +131,19 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
         // Hides the break reminder pop-up.
         setShowBreakReminder(false);
     }
+
+    // Adds points locally and tells the parent/database to save them.
+    const awardPoints = useCallback(async (pointsToAdd: number) => {
+    pointsEarnedRef.current += pointsToAdd;
+
+    setPointsEarnedThisSession(pointsEarnedRef.current);
+
+    try {
+        await onEarnpoint(pointsToAdd);
+    } catch (error) {
+        console.error("Error awarding points:", error);
+    }
+    }, [onEarnpoint]);
 
     useEffect(() => {
         // if timer is not runnnig, do nothing
@@ -134,6 +161,21 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
 
                     // Shows the break reminder pop-up.
                     setShowBreakReminder(true);
+
+                    // Saves the completed study Session.
+                    if (!sessionSavedRef.current) 
+                    {
+                        sessionSavedRef.current = true;
+
+                        if (onSessionComplete) 
+                        {
+                            Promise.resolve(
+                                onSessionComplete("Focus Session", selectedMinutes, pointsEarnedRef.current)
+                            ).catch((error) => {
+                                console.error("Error saving completed session:", error);
+                            });
+                        }
+                    }
 
                     return 0; // returns 0 so timer doesn't go negative
                 }
@@ -165,7 +207,7 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
             rewardedNormalSecondsRef.current += Point_Interval
 
             // updates local point counter
-            setPointsEarnedThisSession((previousPoints) => previousPoints + 1);
+            void awardPoints(1);
 
             // call parent function
             onEarnpoint(1);
@@ -177,7 +219,7 @@ export default function PomodoroTimer({onEarnpoint}: PomodoroTimerProps) {
             rewardedBonusSecondsRef.current += Bonus_Point_Interval
 
             // updates local point counter
-            setPointsEarnedThisSession((previousPoints) => previousPoints + 4);
+            void awardPoints(4)
 
             // call parent function
             onEarnpoint(4);

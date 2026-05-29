@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "./supabaseClient";
 
 export type OccupiedSeat = {
@@ -20,7 +20,8 @@ type UseRoomPresenceOptions = {
 
 export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPresenceOptions) {
   const [seats, setSeats] = useState<OccupiedSeat[]>([]);
-  const mySeatIdRef = useRef<string | null>(null);
+  const [mySeatId, setMySeatId ] = useState<string | null>(null);
+  const [playerCount, setPlayerCount] = useState(0);
 
   // load initial seat state
   useEffect(() => {
@@ -65,10 +66,48 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+    // Tracks how many users are currently connected to the room.
+    // Counts all users even if they are not sitting.
+    useEffect(() => {
+        if (!userId) return;
+
+        const channel = supabase.channel("study-room-presence", {
+            config: {
+                presence: {
+                    key: userId,
+                },
+            },
+        });
+
+        channel
+            .on("presence", { event: "sync" }, () => {
+                const state = channel.presenceState();
+
+                // Counts unique connected users.
+                setPlayerCount(Object.keys(state).length);
+            })
+            .subscribe(async (status) => {
+                if (status === "SUBSCRIBED") {
+                    await channel.track({
+                        user_id: userId,
+                        display_name: displayName ?? "Guest",
+                        avatar_type: avatarType ?? "unknown",
+                        online_at: new Date().toISOString(),
+                    });
+                }
+            });
+
+        return () => {
+            channel.untrack();
+            supabase.removeChannel(channel);
+        };
+    }, [userId, displayName, avatarType]);
+
+
   // vacate seat helper
   const vacateSeat = useCallback(async () => {
     if (!userId) return;
-    mySeatIdRef.current = null;
+    setMySeatId(null);
     await supabase.from("room_seats").delete().eq("user_id", userId);
   }, [userId]);
 
@@ -123,14 +162,15 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
 
     const { error } = await supabase.from("room_seats").insert(row);
     if (!error) {
-      mySeatIdRef.current = seatId;
+      setMySeatId(seatId);
     }
   }, [userId, displayName, avatarType]);
 
   return {
     seats,
+    playerCount,
     claimSeat,
     vacateSeat,
-    mySeatId: mySeatIdRef.current,
+    mySeatId,
   };
 }
