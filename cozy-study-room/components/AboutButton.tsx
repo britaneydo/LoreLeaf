@@ -114,24 +114,6 @@ function AboutOverlay({ onClose }: OverlayProps) {
         {view === "about"   && <AboutView   onBack={() => setView("menu")} />}
         {view === "feedback"&& <FeedbackView onBack={() => setView("menu")} />}
       </div>
-
-      <style>{`
-        @font-face {
-          font-family: 'PixelOperator';
-          src: url('/fonts/PixelOperator.ttf') format('truetype');
-          font-weight: normal;
-        }
-        @font-face {
-          font-family: 'PixelOperatorSC';
-          src: url('/fonts/PixelOperatorSC.ttf') format('truetype');
-          font-weight: normal;
-        }
-        @font-face {
-          font-family: 'PixelOperatorSC';
-          src: url('/fonts/PixelOperatorSC-Bold.ttf') format('truetype');
-          font-weight: bold;
-        }
-      `}</style>
     </div>
   );
 }

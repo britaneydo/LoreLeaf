@@ -93,7 +93,7 @@ function SeatTooltip({ seat }: { seat: OccupiedSeat }) {
       padding: "7px 11px",
       minWidth: 130,
       boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
-      fontFamily: "monospace",
+      fontFamily: "'PixelOperatorSC', monospace",
       whiteSpace: "nowrap",
     }}>
       <div style={{ color: "#f0d8a8", fontSize: 12, fontWeight: "bold", marginBottom: 3 }}>
@@ -101,11 +101,11 @@ function SeatTooltip({ seat }: { seat: OccupiedSeat }) {
       </div>
       {seat.task_name && (
         <div style={{ color: "#b0a090", fontSize: 11, marginBottom: 2 }}>
-          📖 {seat.task_name}
+          book {seat.task_name}
         </div>
       )}
       <div style={{ color: "#7a9e7a", fontSize: 11 }}>
-        ⏱ {formatStudyTime(seat.sat_down_at)}
+        timer {formatStudyTime(seat.sat_down_at)}
       </div>
     </div>
   );
@@ -142,6 +142,7 @@ function SeatHitZone({
         transform: "translate(-50%, -50%)",
         cursor: isOccupied ? "default" : "pointer",
         position: "absolute",
+        userSelect: "none",
       }}
       onClick={() => { if (!isOccupied) onGo(seat); }}
       onMouseEnter={() => setHovered(true)}
@@ -180,6 +181,7 @@ export default function StudyRoom() {
   const [isMoving, setIsMoving] = useState(false);
   const [frame, setFrame] = useState(0);
   const [pomodoroOpen, setPomodoroOpen] = useState(false);
+  const [treeHovered, setTreeHovered] = useState(false);
 
   // Authentication from supabase
   const { user, displayName } = useUser();
@@ -193,7 +195,7 @@ export default function StudyRoom() {
     avatarType: avatarType ? avatarType.id : null,
   });
 
-  // Quick lookup: seat_id → OccupiedSeat
+  // Quick lookup: seat_id -> OccupiedSeat
   const occupiedMap = Object.fromEntries(occupiedSeats.map((s) => [s.seat_id, s]));
 
   const pathRef         = useRef<{ x: number; y: number }[]>([]);
@@ -289,15 +291,23 @@ export default function StudyRoom() {
       }}
     >
       <div
-        className="relative"
-        style={{
-          width: 1400,
-          height: 900,
-          flexShrink: 0,
-          transform: `scale(${scale})`,
-          transformOrigin: "center center",
-        }}
-      >
+      className="relative"
+      style={{
+        width: 1400,
+        height: 900,
+        flexShrink: 0,
+        transform: `scale(${scale})`,
+        transformOrigin: "center center",
+      }}
+    >
+      <div style={{
+        position: "absolute",
+        visibility: "hidden",
+        pointerEvents: "none",
+        fontFamily: "'PixelOperatorSC', monospace",
+        fontSize: 0,
+      }}>.</div>
+  
         {/* FLOOR */}
         <div className="absolute" style={{
           top: 96, left: 0, right: 0, bottom: 0,
@@ -359,7 +369,57 @@ export default function StudyRoom() {
         <div className="absolute pointer-events-none animate-pulse" style={{ left: 730, top: 70, width: 160, height: 420, opacity: 0.5, background: "linear-gradient(to bottom, rgba(255,240,200,0.2), rgba(255,255,200,0))", transform: "skewX(-20deg)", filter: "blur(6px)", zIndex: 1 }} />
 
         {/* TREE */}
-        <Tree stage={treeStage} x={700} y={380} />
+      <Tree stage={treeStage} x={700} y={380} />
+
+      {/* Invisible hover zone over the tree */}
+      <div
+        style={{
+          position: "absolute",
+          left: 700 - 80,
+          top: 280 - 200,
+          width: 160,
+          height: 400,
+          zIndex: 10,
+          cursor: "default",
+        }}
+        onMouseEnter={() => setTreeHovered(true)}
+        onMouseLeave={() => setTreeHovered(false)}
+      >
+        <div
+          style={{
+            position: "absolute",
+            left: "50%",
+            top: "65%",
+            transform: "translateX(-50%)",
+            marginTop: 8,
+            zIndex: 11,
+            pointerEvents: "none",
+            padding: "8px 12px",
+            minWidth: 130,
+            borderRadius: 12,
+            background: "rgba(30, 24, 18, 0.82)",
+            border: "1px solid rgba(240, 216, 168, 0.45)",
+            color: "#f0d8a8",
+            fontFamily: "'PixelOperatorSC', monospace",
+            textAlign: "center",
+            boxShadow: "0 0 18px rgba(255, 180, 60, 0.25)",
+            opacity: treeHovered ? 1 : 0,
+            transition: "opacity 0.2s ease",
+          }}
+        >
+          <div style={{ fontSize: 14 }}>
+            Points: {totalPoints} / {nextGoal}
+          </div>
+          <div style={{ fontSize: 12, marginTop: 3 }}>
+            {pointsRemaining > 0
+              ? `${pointsRemaining} points until ${nextStageName}`
+              : "Tree is fully grown!"}
+          </div>
+          <div style={{ width: "100%", height: 6, marginTop: 6, borderRadius: 999, background: "rgba(255, 255, 255, 0.15)", overflow: "hidden" }}>
+            <div style={{ width: `${Math.min((totalPoints / nextGoal) * 100, 100)}%`, height: "100%", borderRadius: 999, background: "linear-gradient(90deg, #8fd694, #f0d878)" }} />
+          </div>
+        </div>
+      </div>
 
 
           {/* back wall */}
@@ -512,86 +572,24 @@ export default function StudyRoom() {
             <BookStack3 x={560} y={810} />
             <BookStack4 x={910} y={130} />
 
-        <div
-          style={{
-            position: "absolute",
-            left: 700,
-            top: 477,
-            transform: "translateX(-50%)",
-            zIndex: 2,
-            pointerEvents: "none",
-            padding: "8px 12px",
-            minWidth: 130,
-            borderRadius: 12,
-            background: "rgba(30, 24, 18, 0.82)",
-            border: "1px solid rgba(240, 216, 168, 0.45)",
-            color: "#f0d8a8",
-            fontFamily: "'PixelOperatorSC', monospace",
-            textAlign: "center",
-            boxShadow: "0 0 18px rgba(255, 180, 60, 0.25)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 11,
-              fontWeight: "bold",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              marginBottom: 4,
-            }}
-          >
-            Tree Progress
-          </div>
-
-          <div style={{ fontSize: 10 }}>
-            Points: {totalPoints} / {nextGoal}
-          </div>
-
-          <div style={{ fontSize: 9, marginTop: 3 }}>
-            {pointsRemaining > 0
-              ? `${pointsRemaining} points until ${nextStageName}`
-              : "Tree is fully grown!"}
-          </div>
-
-          <div
-            style={{
-              width: "100%",
-              height: 6,
-              marginTop: 6,
-              borderRadius: 999,
-              background: "rgba(255, 255, 255, 0.15)",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              style={{
-                width: `${Math.min((totalPoints / nextGoal) * 100, 100)}%`,
-                height: "100%",
-                borderRadius: 999,
-                background: "linear-gradient(90deg, #8fd694, #f0d878)",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* COLLISION DEBUG — remove when done
+        {/* COLLISION DEBUG - remove when done
         {OBSTACLES.map((o, i) => (
           <div key={`obs-${i}`} className="absolute pointer-events-none"
             style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                      background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
         ))} */}
 
-        {/* CAT — always wandering */}
+        {/* CAT - always wandering */}
         <Cat />
 
-        {/* COLLISION DEBUG — remove when done
+        {/* COLLISION DEBUG - remove when done
         {OBSTACLES_CAT.map((o, i) => (
           <div key={`obs-${i}`} className="absolute pointer-events-none"
             style={{ left: o.x, top: o.y, width: o.w, height: o.h,
                      background: "rgba(255,0,0,0.15)", border: "1px solid red", zIndex: 998 }} />
         ))} */}
 
-        {/* OTHER USERS — look up their full AvatarType object from the id stored in the DB */}
+        {/* OTHER USERS - look up their full AvatarType object from the id stored in the DB */}
         {SEATS.map((seat) => {
           const occupied = occupiedMap[seat.id];
           if (!occupied || occupied.user_id === userId) return null;
@@ -627,7 +625,7 @@ export default function StudyRoom() {
             top: 530,
             left: 700,
             transform: "translateX(-50%)",
-            zIndex: 998,
+            zIndex: 900,
             pointerEvents: "none",
             opacity: hasChosenSeat ? 0 : 1,
             transition: "opacity 0.6s ease",
@@ -636,7 +634,7 @@ export default function StudyRoom() {
             <div style={{
               fontFamily: "monospace",
               fontSize: 13,
-              letterSpacing: "0.18em",
+              letterSpacing: "0.1em",
               textTransform: "uppercase",
               color: "#f0d8a8",
               textShadow: "0 0 12px rgba(255,180,60,0.8), 0 2px 4px rgba(0,0,0,0.8)",
