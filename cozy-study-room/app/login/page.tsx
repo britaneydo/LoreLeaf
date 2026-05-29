@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const [email, setEmail]       = useState("");
@@ -10,6 +11,12 @@ export default function LoginPage() {
   const [message, setMessage]   = useState<string | null>(null);
   const [error, setError]       = useState<string | null>(null);
   const [loading, setLoading]   = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) window.location.href = "/room";
+    });
+  }, []);
 
   async function handleSubmit() {
     setLoading(true);
@@ -201,7 +208,7 @@ export default function LoginPage() {
             onClick={handleSubmit}
             disabled={loading}
           >
-            {loading ? "..." : mode === "login" ? "ENTER THE LIBRARY" : "CREATE ACCOUNT"}
+            {loading ? "..." : mode === "login" ? "ENTER LIBRARY" : "CREATE ACCOUNT"}
           </button>
 
         </div>
