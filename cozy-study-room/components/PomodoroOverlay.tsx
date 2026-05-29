@@ -19,7 +19,7 @@ export function TomatoButton({ addPoints, onOpenChange, hidden }: TomatoButtonPr
       <div
         style={{
           position: "absolute",
-          bottom: 24,
+          bottom: 136,
           left: 24,
           zIndex: 900,
           cursor: "pointer",

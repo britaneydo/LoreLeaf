@@ -52,6 +52,7 @@ import { TomatoButton } from "../PomodoroOverlay";
 import { HeartButton } from "../../components/AboutButton";
 import { useRoomPresence, OccupiedSeat } from "../../lib/useRoomPresence";
 import { useUser } from "../../lib/useUser";
+import { DoorButton } from "../../components/DoorButton";
 
 const WALL_TILE = { w: 32, h: 96 };
 const SPEED = 2.5;
@@ -658,6 +659,7 @@ export default function StudyRoom() {
 
         {hasChosenSeat && <HeartButton hidden={pomodoroOpen} />}
         {hasChosenSeat && <TomatoButton addPoints={addPoints} onOpenChange={setPomodoroOpen} />}
+        <DoorButton hidden={pomodoroOpen} />
 
         {/* Avatar select overlay */}
         {!avatarType && (
