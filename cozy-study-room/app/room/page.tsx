@@ -1,4 +1,4 @@
-import StudyRoom from "../../components/room/study_room";
+import StudyRoom from "../login/page";
 
 export default function RoomPage() {
   return <StudyRoom />;
