@@ -229,6 +229,46 @@ export async function continueAsGuest()
     return data.session;
 }
 
+// Listens for live updates to the shared tree_progression row.
+// When another user adds points, this lets the frontend update automatically.
+export function subscribeToSharedTreeProgress(
+    onTreeUpdate: (treeRow: {
+        id: number;
+        total_points: number;
+        max_points: number;
+        tree_stage: string;
+        updated_at: string;
+    }) => void
+) {
+    const channel = supabase
+        .channel("shared-tree-progress")
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "tree_progression",
+                filter: "id=eq.1"
+            },
+            (payload) => {
+                onTreeUpdate(payload.new as {
+                    id: number;
+                    total_points: number;
+                    max_points: number;
+                    tree_stage: string;
+                    updated_at: string;
+                });
+            }
+        )
+        .subscribe();
+
+    return channel;
+}
+
+        
+
+
+
 // Signs out users
 export async function signOutUser()
 {

@@ -15,6 +15,7 @@ export default function ChairLeft({ x, y }: ChairProps) {
         top: y,
         zIndex: Z.chair,
         imageRendering: "pixelated",
+        pointerEvents: "none",
       }}
       alt="chair"
       

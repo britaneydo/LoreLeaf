@@ -13,6 +13,7 @@ export default function ShelfSmall({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.shelf,
+        pointerEvents: "none",
       }}
     >
       <img

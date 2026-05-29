@@ -13,6 +13,7 @@ export default function Ladder({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.ladder,
+        pointerEvents: "none",
       }}
     >
       <img

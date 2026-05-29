@@ -13,6 +13,7 @@ export default function TableVertical({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.table,
+        pointerEvents: "none",
       }}
     >
       <img

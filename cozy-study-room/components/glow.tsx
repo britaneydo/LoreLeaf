@@ -37,6 +37,7 @@ export default function Glow({
         filter: `blur(${Math.round(size * 0.18)}px)`,
         opacity,
         zIndex: 10,
+        pointerEvents: "none",
       }}
     />
   );

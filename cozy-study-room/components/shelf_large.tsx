@@ -15,6 +15,7 @@ export default function ShelfLarge({ x, y }: TableProps) {
         left: x,
         top: y,
         zIndex: Z.shelf,
+        pointerEvents: "none",
       }}
     >
       <img

@@ -13,6 +13,7 @@ export default function Bookstack1({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.table,
+        pointerEvents: "none",
       }}
     >
       <img

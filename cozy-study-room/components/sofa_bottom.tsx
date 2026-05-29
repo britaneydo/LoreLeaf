@@ -13,6 +13,7 @@ export default function SofaTop({ x, y }: Props) {
         left: x,
         top: y,
         zIndex: Z.sofa,
+        pointerEvents: "none",
       }}
     >
       <img
