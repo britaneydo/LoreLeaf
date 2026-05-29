@@ -5,10 +5,9 @@ import PomodoroTimer from "./PomodoroTimer";
 import { saveCompletedStudySession } from "@/lib/databaseService";
 
 type TomatoButtonProps = {
-  addPoints: (pts: number) => void;
+  addPoints: (pts: number) => Promise<void> | void;
   onOpenChange: (open: boolean) => void;
   hidden?: boolean;
-  addPoints: (pts: number) => Promise<void> | void;
 };
 
 export function TomatoButton({ addPoints, onOpenChange, hidden }: TomatoButtonProps) {
@@ -180,7 +179,6 @@ function PomodoroSkin({ addPoints }: { addPoints: (pts: number) => Promise<void>
       <div className="pomodoro-skin-wrapper">
         <PomodoroTimer 
             onEarnpoint={addPoints}
-            onSessionComplete={saveCompletedStudySession}
         />
 
       </div>
