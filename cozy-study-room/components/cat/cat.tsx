@@ -224,8 +224,8 @@ export default function Cat({ isHost, sharedState, onHostStateChange,}: CatProps
 
       animRef.current = nextAnim;
       frameRef.current = sharedState.frame;
-  }, [isHost, sharedState]);
-  // prevously had [isHost, sharedState.x, sharedState.y, sharedState.anim, sharedState.frame]
+  }, [isHost, sharedState.x, sharedState.y, sharedState.anim, sharedState.frame, sharedState]);
+  // prevously had [isHost, ]
 
 
   // Preload all sprites; only start the brain once every image has loaded.
