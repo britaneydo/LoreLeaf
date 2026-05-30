@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "./supabaseClient";
 
 export type OccupiedSeat = {
@@ -23,30 +23,27 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
   const [mySeatId, setMySeatId ] = useState<string | null>(null);
   const [playerCount, setPlayerCount] = useState(0);
 
-  // load initial seat state
+  // Refs so claimSeat always sees the latest values without needing
+  // to be recreated every time props change.
+  const displayNameRef = useRef(displayName);
+  const avatarTypeRef  = useRef(avatarType);
+  useEffect(() => { displayNameRef.current = displayName; }, [displayName]);
+  useEffect(() => { avatarTypeRef.current  = avatarType;  }, [avatarType]);
+
+
+
+  // Cleans up any old seat row for this user when they first enter the room.
+  // Uses a ref so it only ever fires once — re-running on userId change would
+  // delete other users' rows from local state via the realtime DELETE handler.
+  // Run cleanup exactly once when userId first becomes available.
+  // Must NOT re-run if userId changes or after claimSeat inserts a row.
+  const cleanedUpRef = useRef(false);
   useEffect(() => {
-    supabase
-      .from("room_seats")
-      .select("*")
-      .then(({ data }) => {
-        if (data) setSeats(data as OccupiedSeat[]);
-      });
-  }, []);
-
-  // Cleans up any old seat row for this user when they enter the room.
-  // This prevents stale avatars from staying after refresh/crash/server stop.
-  useEffect(() => {
-      if (!userId) return;
-
-      async function cleanupOldSeat() {
-          await supabase
-              .from("room_seats")
-              .delete()
-              .eq("user_id", userId);
-      }
-
-        cleanupOldSeat();
-    }, [userId]);
+    if (!userId || cleanedUpRef.current) return;
+    cleanedUpRef.current = true;
+    console.log("[PRESENCE] cleanup firing for", userId.slice(0,8));
+    supabase.from("room_seats").delete().eq("user_id", userId);
+  }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
 
 
   // LIVE. real time changes
@@ -58,10 +55,10 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
         { event: "*", schema: "public", table: "room_seats" },
         (payload) => {
           if (payload.eventType === "INSERT") {
+            console.log("[PRESENCE] INSERT received:", payload.new);
             setSeats((prev) => {
-              // Deduplicate by user_id so a user re-sitting in a new seat
-              // correctly replaces their old entry instead of being blocked.
               const exists = prev.some((s) => s.user_id === (payload.new as OccupiedSeat).user_id);
+              console.log("[PRESENCE] exists?", exists, "prev:", prev.map(s => s.user_id.slice(0,8)));
               return exists ? prev : [...prev, payload.new as OccupiedSeat];
             });
           } else if (payload.eventType === "UPDATE") {
@@ -73,6 +70,7 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
               )
             );
           } else if (payload.eventType === "DELETE") {
+            console.log("[PRESENCE] DELETE received:", payload.old);
             setSeats((prev) =>
               prev.filter((s) => s.seat_id !== (payload.old as { seat_id: string }).seat_id)
             );
@@ -80,12 +78,24 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
         }
       )
       .subscribe(async (status) => {
+        console.log("[PRESENCE] channel status:", status);
         if (status === "SUBSCRIBED") {
-          // Re-fetch after subscribing to close the timing gap between the
-          // initial load and the channel becoming active. Any inserts that
-          // happened in that window are captured here.
           const { data } = await supabase.from("room_seats").select("*");
-          if (data) setSeats(data as OccupiedSeat[]);
+          console.log("[PRESENCE] post-subscribe fetch:", data);
+          if (data) {
+            // Merge with current state instead of replacing it — a live INSERT
+            // may have already arrived while this fetch was in flight, so we
+            // union both sets keyed by user_id to avoid wiping live updates.
+            setSeats((prev) => {
+              const merged = [...(data as OccupiedSeat[])];
+              prev.forEach((s) => {
+                if (!merged.some((m) => m.user_id === s.user_id)) {
+                  merged.push(s);
+                }
+              });
+              return merged;
+            });
+          }
         }
       });
 
@@ -170,9 +180,18 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
     return () => window.removeEventListener("beforeunload", handleUnload);
   }, [userId]);
 
-  // claim a seat
-  const claimSeat = useCallback(async (seatId: string, taskName: string = "") => {
-    if (!userId || !displayName || !avatarType) return;
+  // claim a seat — accepts optional overrides for avatarType and displayName
+  // so the caller can pass the latest values directly without relying on refs.
+  const claimSeat = useCallback(async (
+    seatId: string,
+    taskName: string = "",
+    avatarTypeOverride?: string,
+    displayNameOverride?: string,
+  ) => {
+    if (!userId) return;
+
+    const resolvedAvatar      = avatarTypeOverride   ?? avatarTypeRef.current   ?? "default";
+    const resolvedDisplayName = displayNameOverride  ?? displayNameRef.current  ?? "Guest";
 
     // vacate any previous seat first
     await supabase.from("room_seats").delete().eq("user_id", userId);
@@ -180,17 +199,20 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
     const row: OccupiedSeat = {
       seat_id:      seatId,
       user_id:      userId,
-      display_name: displayName,
-      avatar_type:  avatarType,
+      display_name: resolvedDisplayName,
+      avatar_type:  resolvedAvatar,
       task_name:    taskName,
       sat_down_at:  new Date().toISOString(),
     };
 
+    console.log("[PRESENCE] inserting row:", row);
     const { error } = await supabase.from("room_seats").insert(row);
-    if (!error) {
+    if (error) {
+      console.error("[PRESENCE] insert error:", error);
+    } else {
       setMySeatId(seatId);
     }
-  }, [userId, displayName, avatarType]);
+  }, [userId]);
 
   return {
     seats,

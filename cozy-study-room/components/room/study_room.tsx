@@ -274,16 +274,17 @@ export default function StudyRoom() {
   }, []);
 
   const goToSeat = useCallback((seat: typeof SEATS[0]) => {
-    selectedSeatRef.current = seat;
-    const newPath = findPath(
-      playerXRef.current, playerYRef.current,
-      seat.sitX, seat.sitY
-    );
-    pathRef.current = newPath;
-    setIsMoving(newPath.length > 0);
-    setHasChosenSeat(true);
-    claimSeat(seat.id);
-  }, [claimSeat]);
+  console.log("[GOSEAT] called with seat:", seat.id, "avatarType:", avatarType?.id, "displayName:", displayName);
+  selectedSeatRef.current = seat;
+  const newPath = findPath(
+    playerXRef.current, playerYRef.current,
+    seat.sitX, seat.sitY
+  );
+  pathRef.current = newPath;
+  setIsMoving(newPath.length > 0);
+  setHasChosenSeat(true);
+  claimSeat(seat.id, "", avatarType?.id, displayName ?? undefined);
+}, [claimSeat, avatarType, displayName]);
 
   // Release seat
   useEffect(() => {
