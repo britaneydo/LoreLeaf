@@ -12,6 +12,8 @@ type PomodoroTimerProps = {
         durationMinutes: number,
         pointsEarned: number
     ) => Promise<void> | void;
+    // fires once when the countdown reaches zero
+    onTimerComplete?: () => void;
 };
 
 
@@ -35,7 +37,7 @@ const Bonus_Point_Interval = 20 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.
-export default function PomodoroTimer({onEarnpoint, onSessionComplete}: PomodoroTimerProps) {
+export default function PomodoroTimer({onEarnpoint, onSessionComplete, onTimerComplete}: PomodoroTimerProps) {
 
     // stores selected time
     const [selectedMinutes, setSelectedMinutes ] = useState(MIN_MINUTES);
@@ -152,6 +154,10 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
         // create an interval that runs every second
         const intervalId = setInterval(async () => {
 
+            // Flag set inside the updater, read outside — avoids calling
+            // setState (setRinging in parent) during another component's render.
+            let justCompleted = false;
+
             // updates seconds left safely using the previous value
             setSecondsLeft((previousSeconds) => {
 
@@ -161,6 +167,8 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
 
                     // Shows the break reminder pop-up.
                     setShowBreakReminder(true);
+
+                    justCompleted = true;
 
                     // Saves the completed study Session.
                     if (!sessionSavedRef.current) 
@@ -183,12 +191,15 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
                 // Subtracts 1 second.
                 return previousSeconds -1;
             });
+
+            // Notify parent outside the setState updater
+            if (justCompleted) onTimerComplete?.();
         },1000);
             // cleans up interval when timer stops
             return () => clearInterval(intervalId)
         }, [isRunning]);
 
-        useEffect(() => {
+    useEffect(() => {
             // calculates total session seconds
             const totalSessionSeconds = selectedMinutes * SECONDS_PER_MINUTE;
 
@@ -323,6 +334,3 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
     </section>
   );
 }
-
-
-

@@ -217,14 +217,13 @@ function AboutView({ onBack }: { onBack: () => void }) {
 
       <div style={{ display: "flex", gap: 24 }}>
         {[
-          { name: "Britaney Do",    href: "https://github.com/britaneydo",   img: "/assets/team/britaney.png" },
-          { name: "Richard Le",     href: "https://github.com/rtledev",      img: "/assets/team/richard.png"  },
-          { name: "Israel Zavala",  href: "https://github.com/IsraelZavala", img: "/assets/team/israel.png"   },
+          { name: "Britaney Do",    href: "https://www.linkedin.com/in/britaneydo/",   img: "/assets/team/britaney.png" },
+          { name: "Richard Le",     href: "https://www.linkedin.com/in/richard-le-cs/",      img: "/assets/team/richard.png"  },
+          { name: "Israel Zavala",  href: "https://www.linkedin.com/in/israel-zavala-alvarez-714b90298/", img: "/assets/team/israel.png"   },
         ].map(({ name, href, img }) => (
           <a key={name} href={href} target="_blank" rel="noreferrer"
             style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
                      color: "#6b1a1a", textDecoration: "none" }}>
-            {/* images here */}
             <img
               src={img}
               alt={name}

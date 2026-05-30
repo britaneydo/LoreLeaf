@@ -700,7 +700,7 @@ export default function StudyRoom() {
         {hasChosenSeat && <TomatoButton addPoints={addPoints} onOpenChange={setPomodoroOpen} />}
         <DoorButton hidden={pomodoroOpen} />
 
-        {/* Avatar select overlay */}
+        {/* Avatar select overlay*/}
         {!avatarType && (
           <div style={{
             position: "absolute",
