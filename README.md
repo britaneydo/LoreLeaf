@@ -79,11 +79,11 @@ Tree stages:
 
 The tree uses different sprites depending on its current stage:
 
-- [Luminous_tree5.png](cozy-study-room/public/assets/Luminous_tree1.png)
-- [Luminous_tree4.png](cozy-study-room/public/assets/Luminous_tree2.png)
-- [Luminous_tree3.png](cozy-study-room/public/assets/Luminous_tree3.png)
-- [Luminous_tree2.png](cozy-study-room/public/assets/Luminous_tree4.png)
-- [Luminous_tree1.png](cozy-study-room/public/assets/Luminous_tree5.png)
+![Luminous_tree5.png](cozy-study-room/public/assets/Luminous_tree1.png)
+![Luminous_tree4.png](cozy-study-room/public/assets/Luminous_tree2.png)
+![Luminous_tree3.png](cozy-study-room/public/assets/Luminous_tree3.png)
+![Luminous_tree2.png](cozy-study-room/public/assets/Luminous_tree4.png)
+![Luminous_tree1.png](cozy-study-room/public/assets/Luminous_tree5.png)
 
 As the shared point total increases and reaches the next Tree Stage, the tree visually changes in the study room.
 
