@@ -30,8 +30,8 @@ const SECONDS_PER_MINUTE = 60;
 // user earns 1 point every 5 min
 const Point_Interval = 5 * SECONDS_PER_MINUTE;
 
-// user earns bonus points (+4) every 10 min
-const Bonus_Point_Interval = 10 * SECONDS_PER_MINUTE;
+// user earns bonus points (+4) every 15 min
+const Bonus_Point_Interval = 15 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.
