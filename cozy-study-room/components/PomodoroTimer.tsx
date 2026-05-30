@@ -186,7 +186,7 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
         },1000);
             // cleans up interval when timer stops
             return () => clearInterval(intervalId)
-        });
+        }, [isRunning]);
 
         useEffect(() => {
             // calculates total session seconds
