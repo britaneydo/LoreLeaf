@@ -57,7 +57,7 @@ export default function AvatarSelect({ onSelect }: Props) {
           letterSpacing: "0",
           margin: 0,
         }}>
-          Select who you'd like to be in the library
+          {"Select who you'd like to be in the library"}
         </p>
       </div>
 

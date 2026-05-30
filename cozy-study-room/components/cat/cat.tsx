@@ -224,7 +224,8 @@ export default function Cat({ isHost, sharedState, onHostStateChange,}: CatProps
 
       animRef.current = nextAnim;
       frameRef.current = sharedState.frame;
-  }, [isHost, sharedState.x, sharedState.y, sharedState.anim, sharedState.frame]);
+  }, [isHost, sharedState]);
+  // prevously had [isHost, sharedState.x, sharedState.y, sharedState.anim, sharedState.frame]
 
 
   // Preload all sprites; only start the brain once every image has loaded.
@@ -411,7 +412,7 @@ export default function Cat({ isHost, sharedState, onHostStateChange,}: CatProps
           Without these, some browsers evict background-image resources between
           animation switches, causing blink even after preloading. */}
       {UNIQUE_SRCS.map(src => (
-        // eslint-disable-next-line @next/next/no-img-element
+        // .eslint-disable-next-line @next/next/no-img-element
         <img
           key={src}
           src={src}

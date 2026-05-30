@@ -11,7 +11,7 @@ type Props = {
   avatarType: AvatarType;
 };
 
-export default function Avatar({ x, y, frame, facing, isMoving, avatarType }: Props) {
+export default function Avatar({ x, y, frame, facing, avatarType }: Props) {
   return (
     <div
       style={{

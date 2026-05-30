@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import PomodoroTimer from "./PomodoroTimer";
-import { saveCompletedStudySession } from "@/lib/databaseService";
+// import { saveCompletedStudySession } from "@/lib/databaseService"; // addEarnPoints(pointsToAdd) takes care of the tree gain points saving that data
 
 type TomatoButtonProps = {
   addPoints: (pts: number) => Promise<void> | void;

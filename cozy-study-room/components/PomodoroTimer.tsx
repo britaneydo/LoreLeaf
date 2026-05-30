@@ -27,11 +27,11 @@ const STEP_MINUTES = 5;
 // How many seconds are in one minute
 const SECONDS_PER_MINUTE = 60;
 
-// user earns 1 point every 20min
-const Point_Interval = 20 * SECONDS_PER_MINUTE;
+// user earns 1 point every 5 min
+const Point_Interval = 5 * SECONDS_PER_MINUTE;
 
-// user earns bonus points every 30min
-const Bonus_Point_Interval = 30 * SECONDS_PER_MINUTE;
+// user earns bonus points (+4) every 10 min
+const Bonus_Point_Interval = 10 * SECONDS_PER_MINUTE;
 
 
 // main pomodoro timer component.
@@ -225,7 +225,7 @@ export default function PomodoroTimer({onEarnpoint, onSessionComplete}: Pomodoro
             onEarnpoint(4);
             }
 
-        }, [secondsLeft, selectedMinutes, onEarnpoint]);
+        }, [secondsLeft, selectedMinutes, onEarnpoint, awardPoints]);
 
  return (
     <section className="flex flex-col items-center gap-4 rounded-xl bg-neutral-800 p-6 text-white">

@@ -12,7 +12,7 @@ export default function Plant({ x, y }: Props) {
       style={{
         left: x,
         top: y,
-        zIndex: 4,
+        zIndex: Z.plant,
         pointerEvents: "none",
       }}
     >

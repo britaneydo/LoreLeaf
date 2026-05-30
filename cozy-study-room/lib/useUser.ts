@@ -1,13 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 import type { User } from "@supabase/supabase-js";
 
 export function useUser() {
   const [user, setUser]               = useState<User | null>(null);
-  const [displayName, setDisplayName] = useState<string | null>(null);
-  const [loading, setLoading]         = useState(true);
+  const [displayName, setDisplayName] = useState<string | null>(null); // stores user's display name from profile tab (superbase)
+  const [loading, setLoading]         = useState(true); // tracks user/profile data is still loading
+
+    const fetchDisplayName = useCallback(async(userId: string) => {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", userId)
+      .single();
+
+    if (error){
+      console.error("Failed to fetch Display Name:", error);
+      setDisplayName(null);
+      setLoading(false);
+    }
+    setDisplayName(data?.display_name ?? null);
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
     // get current session
@@ -25,17 +41,7 @@ export function useUser() {
     });
 
     return () => listener.subscription.unsubscribe();
-  }, []);
-
-  async function fetchDisplayName(userId: string) {
-    const { data } = await supabase
-      .from("profiles")
-      .select("display_name")
-      .eq("id", userId)
-      .single();
-    setDisplayName(data?.display_name ?? null);
-    setLoading(false);
-  }
+  },[fetchDisplayName]);
 
   return { user, displayName, loading };
 }

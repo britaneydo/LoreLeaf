@@ -173,8 +173,8 @@ function SeatHitZone({
 
 export default function StudyRoom() {
   const scale = useRoomScale();
-  const { stage: treeStage, totalPoints, maxPoints, 
-    nextGoal, nextStageName, pointsRemaining, addPoints } = useTreeCounter();
+  const { stage: treeStage, totalPoints, nextGoal, 
+    nextStageName, pointsRemaining, addPoints } = useTreeCounter();
 
   const [avatarType, setAvatarType] = useState<AvatarType | null>(null);
   const [hasChosenSeat, setHasChosenSeat] = useState(false);
@@ -391,8 +391,10 @@ export default function StudyRoom() {
             return (
               <div key={`wall-${i}`} className="absolute"
                 style={{ left: i * WALL_TILE.w, top: 0, width: WALL_TILE.w, height: WALL_TILE.h, pointerEvents: "none", }}>
-                <img src="/assets/wall.png" className="absolute w-[32px] h-[96px] pixelated" />
-                {isWindow && <img src="/assets/window_narrow2.png" className="absolute pixelated" style={{ top: 18, width: 32, height: 54 }} />}
+                <img src="/assets/wall.png" className="absolute w-[32px] h-[96px] pixelated"
+                alt ="" />
+                {isWindow && <img src="/assets/window_narrow2.png" className="absolute pixelated" style={{ top: 18, width: 32, height: 54 }}
+                alt="" />}
               </div>
             );
           })}

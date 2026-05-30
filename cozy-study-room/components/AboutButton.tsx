@@ -212,7 +212,7 @@ function AboutView({ onBack }: { onBack: () => void }) {
         letterSpacing: "0.08em",
         textTransform: "uppercase",
       }}>
-        LoreLeaf's Team
+        {"LoreLeaf's Team"}
       </h2>
 
       <div style={{ display: "flex", gap: 24 }}>
@@ -254,6 +254,19 @@ const EMAILJS_PUBLIC_KEY  = "I8EEFULIxzQHAfwev";
 
 type FeedbackState = "idle" | "sending" | "sent" | "error";
 
+type EmailJSWindow = Window & { emailjs?: { // ? means that emailjs is optional since EmailJS might not be loaded
+    send: (
+      serviceId: string,
+      templateId: string,
+      templateParams: {
+        from_name: string;
+        message: string;
+      },
+      publicKey: string
+    ) => Promise<unknown>;
+  };
+};
+
 function FeedbackView({ onBack }: { onBack: () => void }) {
   const [name, setName]       = useState("");
   const [message, setMessage] = useState("");
@@ -264,8 +277,11 @@ function FeedbackView({ onBack }: { onBack: () => void }) {
     setStatus("sending");
 
     try {
-      const emailjs = (window as any).emailjs;
-      await emailjs.send(
+      const emailjs = (window as EmailJSWindow).emailjs;
+      if(!emailjs) {
+        throw new Error("EmailJS is not loaded.");
+      }
+      await emailjs.send( // sneds feedback message using EmailJS
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
         { from_name: name, message },
