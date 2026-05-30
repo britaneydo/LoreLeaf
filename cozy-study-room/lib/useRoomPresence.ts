@@ -59,7 +59,9 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
         (payload) => {
           if (payload.eventType === "INSERT") {
             setSeats((prev) => {
-              const exists = prev.some((s) => s.seat_id === (payload.new as OccupiedSeat).seat_id);
+              // Deduplicate by user_id so a user re-sitting in a new seat
+              // correctly replaces their old entry instead of being blocked.
+              const exists = prev.some((s) => s.user_id === (payload.new as OccupiedSeat).user_id);
               return exists ? prev : [...prev, payload.new as OccupiedSeat];
             });
           } else if (payload.eventType === "UPDATE") {
@@ -77,7 +79,15 @@ export function useRoomPresence({ userId, displayName, avatarType }: UseRoomPres
           }
         }
       )
-      .subscribe();
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          // Re-fetch after subscribing to close the timing gap between the
+          // initial load and the channel becoming active. Any inserts that
+          // happened in that window are captured here.
+          const { data } = await supabase.from("room_seats").select("*");
+          if (data) setSeats(data as OccupiedSeat[]);
+        }
+      });
 
     return () => { supabase.removeChannel(channel); };
   }, []);
