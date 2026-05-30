@@ -85,14 +85,13 @@ The tree uses different sprites depending on its current stage:
 ![Luminous_tree4.png](cozy-study-room/public/assets/Luminous_tree2.png)
 ![Luminous_tree5.png](cozy-study-room/public/assets/Luminous_tree1.png)
 
-
 As the shared point total increases and reaches the next Tree Stage, the tree visually changes in the study room.
 
 ---
 
 ### Tree Progress Display
 
-The frontend shows the current tree progress so users can understand how close they are to the next stage.
+The frontend shows the current tree progress so users can understand how close they are to the next stage by hovering over the tree.
 
 The display shows:
 
@@ -100,7 +99,7 @@ The display shows:
 - The next required point goal
 - How many points are left until the next tree stage or max points
 
-Example:
+For example:
 
 ```txt
 Tree Progress
