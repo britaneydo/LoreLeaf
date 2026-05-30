@@ -18,7 +18,7 @@ type PomodoroTimerProps = {
 
 
 // Minimum timer length 20min
-const MIN_MINUTES = 1;
+const MIN_MINUTES = 20;
 
 // Maximum timer length 180min
 const MAX_MINUTES = 180;
